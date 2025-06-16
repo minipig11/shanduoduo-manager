@@ -1,6 +1,5 @@
 <script setup>
-import ImageBrowser from './components/ImageBrowser.vue'
-import VideoBrowser from './components/VideoBrowser.vue'
+import { RouterView } from 'vue-router'
 </script>
 
 <template>
@@ -8,8 +7,7 @@ import VideoBrowser from './components/VideoBrowser.vue'
   </header>
 
   <main>
-    <!-- <ImageBrowser /> -->
-    <VideoBrowser />
+    <RouterView />
   </main>
 </template>
 

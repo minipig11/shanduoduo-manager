@@ -1,5 +1,8 @@
 # liulantupian-manager
 
+# Now you can access: 
+http://localhost:5173/imagelist
+http://localhost:5173/videolist
 
 ```sh
 npm install
