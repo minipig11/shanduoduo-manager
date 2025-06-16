@@ -1,5 +1,6 @@
 <script setup>
 import ImageBrowser from './components/ImageBrowser.vue'
+import VideoBrowser from './components/VideoBrowser.vue'
 </script>
 
 <template>
@@ -7,7 +8,8 @@ import ImageBrowser from './components/ImageBrowser.vue'
   </header>
 
   <main>
-    <ImageBrowser />
+    <!-- <ImageBrowser /> -->
+    <VideoBrowser />
   </main>
 </template>
 
