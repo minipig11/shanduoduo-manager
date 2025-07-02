@@ -28,6 +28,7 @@ node src/server.js
 
 # 视频接口
 支持的视频格式包括 mp4、avi、mov 和 wmv。
+
 /api/videos - GET 接口，获取视频列表
 /videos - 静态文件访问路径
 /api/upload-video - POST 接口，上传视频文件
@@ -59,3 +60,26 @@ curl -X DELETE http://localhost:3001/api/videos/video.mp4
 
 # 更新视频排序：
 curl -X POST -H "Content-Type: application/json" -d '["video1.mp4","video2.mp4"]' http://localhost:3001/api/update-video-order
+
+
+
+###  现在你可以同时访问：
+本地文件系统的图片管理 API
+阿里云 OSS 的图片管理 API
+
+# Test get oss images
+curl http://localhost:3000/oss/images
+
+# Test upload (replace path/to/image.jpg with actual image path)
+curl -X POST -F "image=@path/to/image.jpg" http://localhost:3000/oss/upload
+
+### NPM
+npm install ali-oss dotenv multer express
+npm install ali-oss dotenv
+确保：
+
+### OSS 相关的端点：
+GET /oss/images - 获取 OSS 中的图片列表
+POST /oss/upload - 上传图片到 OSS
+DELETE /oss/images/:filename - 从 OSS 删除图片
+POST /oss/update-order - 更新 OSS 中的图片顺序

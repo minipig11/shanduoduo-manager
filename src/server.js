@@ -3,22 +3,21 @@ import express from 'express';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import fs from 'fs';
-import cors from 'cors'; // 新增
+import cors from 'cors';
 import multer from 'multer';
 import path from 'path';
+import ossServer from '../api/ossServer.js'; // 引入 OSS 服务路由
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const app = express();
-app.use(cors()); // 启用 CORS，允许所有域名访问（开发环境适用）
-// 关键配置：必须添加这两行中间件
-app.use(express.json()); // 解析 application/json
-app.use(express.urlencoded({ extended: true })); // 解析 application/x-www-form-urlencoded
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-/*app.use(cors({
- origin: 'http://localhost:5173' // 仅允许该域名跨域
-}));*/
+// 添加 OSS 服务路由
+app.use('/oss', ossServer);
 
 const IMAGES_DIR = 'D:/code_repository_2/liulantupian/images';
 const VIDEO_DIR = 'D:/code_repository_2/liulantupian/video';
