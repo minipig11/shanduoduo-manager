@@ -1,4 +1,4 @@
-# liulantupian-manager
+# shanduoduo-manager
 
 # Now you can access: 
 http://localhost:5173/imagelist
@@ -15,7 +15,13 @@ npm run dev
 npm run build
 ```
 
-node src/server.js
+### NPM
+npm install multer
+npm install ali-oss dotenv
+npm install express cors
+确保：
+
+node api/server.js
 
 # 图片接口
 支持的图片格式包括 jpg、jpeg、png。
@@ -73,10 +79,6 @@ curl http://localhost:3000/oss/images
 # Test upload (replace path/to/image.jpg with actual image path)
 curl -X POST -F "image=@path/to/image.jpg" http://localhost:3000/oss/upload
 
-### NPM
-npm install ali-oss dotenv multer express
-npm install ali-oss dotenv
-确保：
 
 ### OSS 相关的端点：
 GET /oss/images - 获取 OSS 中的图片列表

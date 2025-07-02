@@ -1,12 +1,13 @@
 {
-  "name": "liulantupian-manager",
+  "name": "shanduoduo-manager",
   "version": "0.0.0",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "start": "node api/server.js"
   },
   "dependencies": {
     "ali-oss": "^6.23.0",
@@ -14,6 +15,7 @@
     "dotenv": "^17.0.1",
     "element-plus": "^2.10.2",
     "express": "^5.1.0",
+    "multer": "^2.0.1",
     "vue": "^3.2.0",
     "vue-router": "^4.5.1",
     "vuedraggable": "^4.1.0"
