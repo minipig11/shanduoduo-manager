@@ -1,5 +1,5 @@
 const API_BASE_URL = process.env.NODE_ENV === 'production'
-  ? 'https://shanduoduo-manager.vercel.app/api/oss'
+  ? 'https://shanduoduo.sicilyhuang.top/api/oss'
   : '/api/oss';
 
 // 获取 OSS 中的图片列表

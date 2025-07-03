@@ -79,7 +79,7 @@ npm run vercel-list
 尝试重新部署：
 npm run vercel-deploy
 部署后检查健康状态：
-curl https://shanduoduo-manager.vercel.app/api/health
+curl https://shanduoduo.sicilyhuang.top/api/health
 查看详细日志：
 npm run vercel-logs:debug
 

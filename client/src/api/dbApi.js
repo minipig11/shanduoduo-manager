@@ -1,5 +1,5 @@
 const API_BASE_URL = process.env.NODE_ENV === 'production'
-  ? 'https://shanduoduo-manager.vercel.app/api/db'
+  ? 'https://shanduoduo.sicilyhuang.top/api/db'
   : '/api/db';
 
 // 导出获取数据函数

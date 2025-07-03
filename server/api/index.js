@@ -11,7 +11,7 @@ console.log('Environment:', process.env.NODE_ENV);
 
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
-    ? 'https://shanduoduo-manager.vercel.app'
+    ? 'https://shanduoduo.sicilyhuang.top'
     : 'http://localhost:5173',
   credentials: true
 }));
