@@ -1,6 +1,6 @@
 const API_BASE_URL = process.env.NODE_ENV === 'production'
   ? 'https://shanduoduo-manager.vercel.app/api/oss'
-  : import.meta.env.VITE_API_BASE_URL || '/api/oss';
+  : '/api/oss';
 
 // 获取 OSS 中的图片列表
 export const getOssImages = async () => {

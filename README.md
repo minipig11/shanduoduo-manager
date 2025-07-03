@@ -69,3 +69,18 @@ npm install
 
 $env:NODE_ENV="development"; npm run dev:server
 $env:NODE_ENV="development"; npm run dev:client
+
+首先，确保已登录 Vercel CLI：
+vercel login
+检查项目是否正确链接到 Vercel：
+vercel link
+检查最新部署状态：
+npm run vercel-list
+尝试重新部署：
+npm run vercel-deploy
+部署后检查健康状态：
+curl https://shanduoduo-manager.vercel.app/api/health
+查看详细日志：
+npm run vercel-logs:debug
+
+npm install @supabase/supabase-js

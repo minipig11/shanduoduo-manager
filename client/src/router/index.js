@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import OssImageList from '../components/OssImageList.vue'
+import DBList from '../components/DBList.vue';
 
 const router = createRouter({
   history: createWebHistory(),
@@ -10,9 +11,14 @@ const router = createRouter({
       component: OssImageList
     },
     {
+      path: '/db-list',
+      name: 'db-list',
+      component: DBList
+    },   
+     {
       path: '/',
       redirect: '/oss-images'
-    }
+     }
   ]
 })
 

@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import ossRouter from './ossServer.js';
+import dbRouter from './dbServer.js';
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.use((req, res, next) => {
 });
 
 app.use('/api/oss', ossRouter);
+app.use('/api/db', dbRouter);
 
 // Add health check endpoint
 app.get('/api/health', (req, res) => {
