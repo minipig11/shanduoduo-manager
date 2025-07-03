@@ -2,22 +2,25 @@
     "version": 2,
     "builds": [
         {
-            "src": "server.js",
+            "src": "server/api/ossServer.js",
             "use": "@vercel/node"
         },
         {
-            "src": "dist/**",
+            "src": "client/dist/**",
             "use": "@vercel/static"
         }
     ],
     "routes": [
         {
-            "src": "/api/(.*)",
-            "dest": "server.js"
+            "src": "/api/oss/(.*)",
+            "dest": "server/api/ossServer.js"
+        },
+        {
+            "handle": "filesystem"
         },
         {
             "src": "/(.*)",
-            "dest": "dist/$1"
+            "dest": "client/dist/$1"
         }
     ]
 }

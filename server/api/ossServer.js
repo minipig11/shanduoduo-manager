@@ -2,10 +2,22 @@ import OSS from 'ali-oss';
 import express from 'express';
 import multer from 'multer';
 import dotenv from 'dotenv';
+import cors from 'cors';
 
 dotenv.config();
 
 const router = express.Router();
+
+// Enable CORS
+router.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+}));
+
+// Add OPTIONS handler for preflight requests
+router.options('*', cors());
 
 // Initialize OSS client
 const client = new OSS({
@@ -26,12 +38,15 @@ const updateOssList = async (action, filename) => {
     // Read existing list from OSS
     try {
       const result = await client.get(OSS_LIST_FILE);
+      console.log("listResult:"+listResult);
       const content = result.content.toString();
+      console.log("content:"+content);
       // Handle module.exports format
       const jsonStr = content
         .replace('module.exports = ', '')
         .replace(/;$/, '')
         .trim();
+      console.log("jsonStr:"+jsonStr);
       currentList = JSON.parse(jsonStr);
     } catch (error) {
       if (error.code !== 'NoSuchKey') {
@@ -68,16 +83,20 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 // Get list of images (now including order from v0list.js)
 router.get('/images', async (req, res) => {
+  console.log('Received GET request for /images');
   try {
     // Get ordered list from v0list.js
     let orderedList = [];
     try {
       const listResult = await client.get(OSS_LIST_FILE);
+      console.log("listResult:"+listResult);
       const content = listResult.content.toString();
+      console.log("content:"+content);
       const jsonStr = content
         .replace('module.exports = ', '')
         .replace(/;$/, '')
         .trim();
+      console.log("jsonStr:"+jsonStr);
       orderedList = JSON.parse(jsonStr);
     } catch (error) {
       if (error.code !== 'NoSuchKey') {
@@ -107,8 +126,10 @@ router.get('/images', async (req, res) => {
       return indexA - indexB;
     });
     
+    console.log('Sending response:', sortedFiles);
     res.json(sortedFiles);
   } catch (error) {
+    console.error('Error in /images endpoint:', error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -168,6 +189,16 @@ router.post('/update-order', async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
+});
+
+// Error handling middleware
+router.use((err, req, res, next) => {
+  console.error('API Error:', err);
+  res.status(500).json({
+    error: process.env.NODE_ENV === 'production' 
+      ? 'Internal Server Error' 
+      : err.message
+  });
 });
 
 export default router;

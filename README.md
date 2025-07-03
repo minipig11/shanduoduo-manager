@@ -1,12 +1,44 @@
 # shanduoduo-manager
+shanduoduo-manager/
+├── client/                 # 前端 Vue.js 项目
+│   ├── src/
+│   │   ├── components/
+│   │   ├── router/
+│   │   ├── App.vue
+│   │   └── main.js
+│   ├── public/
+│   ├── package.json
+│   └── vite.config.js
+│
+├── server/                 # 后端 Node.js 项目
+│   ├── api/
+│   │   └── ossServer.js
+│   ├── package.json
+│   └── server.js
+│
+├── vercel.json
+└── package.json           # 根目录package.json
 
-### NPM
-npm install multer
-npm install ali-oss dotenv
-npm install express cors
-确保：
+### 开发环境启动步骤
 
-node server.js
+1. 安装依赖
+```bash
+npm run install:all
+```
+
+2. 启动前端服务（默认端口：5173）
+```bash
+npm run dev:client
+```
+
+3. 启动后端服务（默认端口：3000）
+```bash
+npm run dev:server
+```
+
+4. 访问地址：
+- 前端界面：http://localhost:5173
+- 后端API：http://localhost:3000
 
 ### 阿里云 OSS 的图片管理 API
 

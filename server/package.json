@@ -1,0 +1,16 @@
+{
+  "name": "shanduoduo-manager-server",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "ali-oss": "^6.23.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.0.1",
+    "express": "^4.18.2",
+    "multer": "^2.0.1"
+  }
+}

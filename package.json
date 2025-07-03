@@ -1,14 +1,15 @@
 {
   "name": "shanduoduo-manager",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
-    "start": "node server.js",
-    "vercel-build": "npm run build"
+    "install:all": "npm install && cd client && npm install && cd ../server && npm install",
+    "dev:client": "cd client && npm run dev",
+    "dev:server": "cd server && npm run dev",
+    "build": "cd client && npm run build",
+    "start": "cd server && npm start",
+    "vercel-build": "cd client && npm install && npm run build"
   },
   "dependencies": {
     "ali-oss": "^6.23.0",
@@ -27,3 +28,4 @@
     "vite-plugin-vue-devtools": "^7.7.2"
   }
 }
+

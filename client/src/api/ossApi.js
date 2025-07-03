@@ -1,11 +1,21 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/oss';
 
 // 获取 OSS 中的图片列表
 export const getOssImages = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}/oss/images`);
-    if (!response.ok) throw new Error('获取图片列表失败');
-    return await response.json();
+    const response = await fetch(`${API_BASE_URL}/images`, {
+      headers: {
+        'Accept': 'application/json'
+      }
+    });
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP error! status: ${response.status}, body: ${errorText}`);
+    }
+    
+    const data = await response.json();
+    return data;
   } catch (error) {
     console.error('获取 OSS 图片列表错误:', error);
     throw error;
@@ -19,7 +29,7 @@ export const uploadToOss = async (file) => {
     // 使用原始文件名
     formData.append('image', file, file.name);
 
-    const response = await fetch(`${API_BASE_URL}/oss/upload`, {
+    const response = await fetch(`${API_BASE_URL}/upload`, {
       method: 'POST',
       body: formData,
     });
@@ -38,7 +48,7 @@ export const uploadToOss = async (file) => {
 // 从 OSS 删除图片
 export const deleteFromOss = async (filename) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/oss/images/${filename}`, {
+    const response = await fetch(`${API_BASE_URL}/images/${filename}`, {
       method: 'DELETE',
     });
     
@@ -56,7 +66,7 @@ export const deleteFromOss = async (filename) => {
 // 更新 OSS 中的图片顺序
 export const updateOssOrder = async (imageList) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/oss/update-order`, {
+    const response = await fetch(`${API_BASE_URL}/update-order`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
