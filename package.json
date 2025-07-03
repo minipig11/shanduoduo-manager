@@ -9,7 +9,11 @@
     "build": "cd client && npm run build",
     "start": "cd server && npm start",
     "vercel-build": "cd client && npm install && npm run build",
-    "vercel-logs": "vercel logs shanduoduo-manager.vercel.app"
+    "vercel-logs": "vercel logs shanduoduo-manager.vercel.app",
+    "vercel-deploy": "vercel --prod",
+    "vercel-env-pull": "vercel env pull",
+    "vercel-list": "vercel list",
+    "vercel-logs:debug": "vercel logs shanduoduo-manager.vercel.app --debug"
   }
 }
 

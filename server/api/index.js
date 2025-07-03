@@ -4,7 +4,10 @@ import ossRouter from './ossServer.js';
 
 const app = express();
 
-// Fix the duplicated CORS middleware
+// Add debug logging
+console.log('Server starting...');
+console.log('Environment:', process.env.NODE_ENV);
+
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
     ? 'https://shanduoduo-manager.vercel.app'
@@ -13,21 +16,23 @@ app.use(cors({
 }));
 
 app.use(express.json());
-app.use('/api/oss', ossRouter);
 
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok' });
+// Add request logging middleware
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+  next();
 });
 
-app.get('/api/env-check', (req, res) => {
-  const envStatus = {
-    NODE_ENV: process.env.NODE_ENV,
-    OSS_REGION: process.env.OSS_REGION ? '已设置' : '未设置',
-    OSS_BUCKET: process.env.OSS_BUCKET ? '已设置' : '未设置',
-    OSS_ACCESS_KEY_ID: process.env.OSS_ACCESS_KEY_ID ? '已设置' : '未设置',
-    CORS_ORIGIN: process.env.CORS_ORIGIN || '未设置'
-  };
-  res.json(envStatus);
+app.use('/api/oss', ossRouter);
+
+// Add health check endpoint
+app.get('/api/health', (req, res) => {
+  console.log('Health check requested');
+  res.json({ 
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    env: process.env.NODE_ENV
+  });
 });
 
 export default app;
