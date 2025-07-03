@@ -3,7 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
-import ossServer from './router/ossServer.js';
+import ossServer from './api/ossServer.js';
 
 // Create __dirname equivalent for ES modules
 const __filename = fileURLToPath(import.meta.url);
