@@ -1,21 +1,18 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/oss';
+const API_BASE_URL = process.env.NODE_ENV === 'production'
+  ? 'https://shanduoduo-manager.vercel.app/api/oss'
+  : import.meta.env.VITE_API_BASE_URL || '/api/oss';
 
 // 获取 OSS 中的图片列表
 export const getOssImages = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}/images`, {
-      headers: {
-        'Accept': 'application/json'
-      }
-    });
+    console.log('Requesting:', `${API_BASE_URL}/images`);
+    const response = await fetch(`${API_BASE_URL}/images`);
     
     if (!response.ok) {
       const errorText = await response.text();
       throw new Error(`HTTP error! status: ${response.status}, body: ${errorText}`);
     }
-    
-    const data = await response.json();
-    return data;
+    return await response.json();
   } catch (error) {
     console.error('获取 OSS 图片列表错误:', error);
     throw error;

@@ -54,3 +54,18 @@ GET /oss/images - 获取 OSS 中的图片列表
 POST /oss/upload - 上传图片到 OSS
 DELETE /oss/images/:filename - 从 OSS 删除图片
 POST /oss/update-order - 更新 OSS 中的图片顺序
+
+# Clear npm cache
+npm cache clean --force
+
+# Remove node_modules and reinstall
+cd server
+rm -r node_modules
+npm install
+
+cd ../client
+rm -r node_modules
+npm install
+
+$env:NODE_ENV="development"; npm run dev:server
+$env:NODE_ENV="development"; npm run dev:client

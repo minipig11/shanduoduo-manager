@@ -1,40 +1,22 @@
 // server.js
-import express from 'express';
-import cors from 'cors';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import ossServer from './api/ossServer.js';
+import app from './api/index.js';
+import dotenv from 'dotenv';
+import path from 'path';
 
-// Create __dirname equivalent for ES modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+// 根据环境加载对应的环境变量文件
+const envFile = process.env.NODE_ENV === 'production' 
+  ? '.env.production' 
+  : '.env.development';
 
-const app = express();
-const PORT = process.env.PORT || 3000;
+dotenv.config({ path: path.resolve(process.cwd(), envFile) });
 
-// Middleware
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(express.static(join(__dirname, 'public')));
+const PORT = process.env.PORT || 3002;
 
-// Routes
-app.get('/', (req, res) => {
-  res.sendFile(join(__dirname, 'public', 'pages', 'index.html'));
-});
-
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).send('Something broke!');
-});
-
-// 添加 OSS 服务路由
-app.use('/oss', ossServer);
-
-// Start server
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`Server running on http://localhost:${PORT}`);
 });
 
 export default app;

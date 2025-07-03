@@ -1,0 +1,16 @@
+# 环境变量文件
+.env
+.env.local
+.env.*.local
+
+# 日志文件
+logs
+*.log
+npm-debug.log*
+
+# 依赖目录
+node_modules
+
+# 编辑器目录
+.vscode
+.idea
