@@ -3,6 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import ossServer from './router/ossServer.js';
 
 // Create __dirname equivalent for ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -27,6 +28,9 @@ app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).send('Something broke!');
 });
+
+// 添加 OSS 服务路由
+app.use('/oss', ossServer);
 
 // Start server
 app.listen(PORT, () => {
