@@ -1,6 +1,7 @@
 # 环境变量文件
-.env.local
-.env.*.local
+.env
+.env.*
+!.env.example
 
 # 构建输出
 dist

@@ -3,8 +3,35 @@ import express from 'express';
 import multer from 'multer';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-dotenv.config();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Add debug logging before dotenv.config()
+console.log('Before dotenv.config():', {
+  OSS_REGION: process.env.OSS_REGION,
+  OSS_ACCESS_KEY_ID: process.env.OSS_ACCESS_KEY_ID ? 'exists' : 'not set',
+  OSS_ACCESS_KEY_SECRET: process.env.OSS_ACCESS_KEY_SECRET ? 'exists' : 'not set'
+});
+
+// Update dotenv configuration based on NODE_ENV
+const envFile = process.env.NODE_ENV !== 'production' 
+  ? '.env.development'
+  : '.env.production';
+
+dotenv.config({ 
+  path: path.resolve(__dirname, '..', envFile)
+});
+
+console.log('Environment:', {
+  NODE_ENV: process.env.NODE_ENV,
+  envFile: envFile,
+  OSS_REGION: process.env.OSS_REGION,
+  OSS_ACCESS_KEY_ID: process.env.OSS_ACCESS_KEY_ID ? 'exists' : 'not set',
+  OSS_ACCESS_KEY_SECRET: process.env.OSS_ACCESS_KEY_SECRET ? 'exists' : 'not set'
+});
 
 const router = express.Router();
 
