@@ -1,7 +1,7 @@
 // server.js
 import express from 'express';
 import cors from 'cors';
-import ossServer from '../api/ossServer.js'; // 引入 OSS 服务路由
+import ossServer from 'router/ossServer.js'; // 引入 OSS 服务路由
 
 const app = express();
 const PORT = process.env.PORT || 3000;
