@@ -6,13 +6,10 @@ import dbRouter from './dbServer.js';
 const app = express();
 
 // Add debug logging
-console.log('Server starting...');
-console.log('Environment:', process.env.NODE_ENV);
+console.log('Server starting.....................');
 
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? 'https://shanduoduo.sicilyhuang.top'
-    : 'http://localhost:5173',
+  origin: '*',
   credentials: true
 }));
 

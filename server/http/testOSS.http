@@ -1,0 +1,14 @@
+### Test local OSS images endpoint
+GET http://localhost:3000/api/oss/images
+Accept: application/json
+
+### Test production OSS images endpoint 
+GET https://shanduoduo-manager.vercel.app/api/oss/images
+Accept: application/json
+
+### Test production health
+GET http://localhost:3000/api/health
+
+### Test production OSS images endpoint 
+GET https://shanduoduo.sicilyhuang.top/api/oss/images
+Accept: application/json

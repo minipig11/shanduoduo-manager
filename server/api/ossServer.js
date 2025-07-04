@@ -12,25 +12,26 @@ const __dirname = path.dirname(__filename);
 // Add debug logging before dotenv.config()
 console.log('Before dotenv.config():', {
   OSS_REGION: process.env.OSS_REGION,
-  OSS_ACCESS_KEY_ID: process.env.OSS_ACCESS_KEY_ID ? 'exists' : 'not set',
-  OSS_ACCESS_KEY_SECRET: process.env.OSS_ACCESS_KEY_SECRET ? 'exists' : 'not set'
+  OSS_ACCESS_KEY_ID: process.env.OSS_ACCESS_KEY_ID ? process.env.OSS_ACCESS_KEY_ID : 'not set',
+  OSS_ACCESS_KEY_SECRET: process.env.OSS_ACCESS_KEY_SECRET ? process.env.OSS_ACCESS_KEY_SECRET : 'not set',
+  SUPABASE_URL: process.env.SUPABASE_URL ? process.env.SUPABASE_URL : 'not set',
+  SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY ? process.env.SUPABASE_ANON_KEY : 'not set',
 });
 
-// Update dotenv configuration based on NODE_ENV
-const envFile = process.env.NODE_ENV !== 'production' 
-  ? '.env.development'
-  : '.env.production';
-
-dotenv.config({ 
-  path: path.resolve(__dirname, '..', envFile)
-});
+// 在非生产环境下加载本地环境变量
+if (process.env.NODE_ENV !== 'production') {
+  dotenv.config({ 
+    path: path.resolve(__dirname, '..', '.env.development')
+  });
+}
 
 console.log('Environment:', {
   NODE_ENV: process.env.NODE_ENV,
-  envFile: envFile,
   OSS_REGION: process.env.OSS_REGION,
-  OSS_ACCESS_KEY_ID: process.env.OSS_ACCESS_KEY_ID ? 'exists' : 'not set',
-  OSS_ACCESS_KEY_SECRET: process.env.OSS_ACCESS_KEY_SECRET ? 'exists' : 'not set'
+  OSS_ACCESS_KEY_ID: process.env.OSS_ACCESS_KEY_ID ? process.env.OSS_ACCESS_KEY_ID : 'not set',
+  OSS_ACCESS_KEY_SECRET: process.env.OSS_ACCESS_KEY_SECRET ? process.env.OSS_ACCESS_KEY_SECRET : 'not set',
+  SUPABASE_URL: process.env.SUPABASE_URL ? process.env.SUPABASE_URL : 'not set',
+  SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY ? process.env.SUPABASE_ANON_KEY : 'not set',
 });
 
 const router = express.Router();
