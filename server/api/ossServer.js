@@ -14,8 +14,8 @@ console.log('Before dotenv.config():', {
   OSS_REGION: process.env.OSS_REGION,
   OSS_ACCESS_KEY_ID: process.env.OSS_ACCESS_KEY_ID ? process.env.OSS_ACCESS_KEY_ID : 'not set',
   OSS_ACCESS_KEY_SECRET: process.env.OSS_ACCESS_KEY_SECRET ? process.env.OSS_ACCESS_KEY_SECRET : 'not set',
-  SUPABASE_URL: process.env.SUPABASE_URL ? process.env.SUPABASE_URL : 'not set',
-  SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY ? process.env.SUPABASE_ANON_KEY : 'not set',
+  VITE_SUPABASE_URL: process.env.VITE_SUPABASE_URL ? process.env.VITE_SUPABASE_URL : 'not set',
+  VITE_SUPABASE_ANON_KEY: process.env.VITE_SUPABASE_ANON_KEY ? process.env.VITE_SUPABASE_ANON_KEY : 'not set',
 });
 
 // 在非生产环境下加载本地环境变量
@@ -30,8 +30,8 @@ console.log('Environment:', {
   OSS_REGION: process.env.OSS_REGION,
   OSS_ACCESS_KEY_ID: process.env.OSS_ACCESS_KEY_ID ? process.env.OSS_ACCESS_KEY_ID : 'not set',
   OSS_ACCESS_KEY_SECRET: process.env.OSS_ACCESS_KEY_SECRET ? process.env.OSS_ACCESS_KEY_SECRET : 'not set',
-  SUPABASE_URL: process.env.SUPABASE_URL ? process.env.SUPABASE_URL : 'not set',
-  SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY ? process.env.SUPABASE_ANON_KEY : 'not set',
+  VITE_SUPABASE_URL: process.env.VITE_SUPABASE_URL ? process.env.VITE_SUPABASE_URL : 'not set',
+  VITE_SUPABASE_ANON_KEY: process.env.VITE_SUPABASE_ANON_KEY ? process.env.VITE_SUPABASE_ANON_KEY : 'not set',
 });
 
 const router = express.Router();
