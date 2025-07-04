@@ -1,4 +1,5 @@
 @baseUrl = http://localhost:3000
+# @baseUrl = https://shanduoduo.sicilyhuang.top/
 
 ### 获取 liulantupian bucket 的 v0list.js 文件
 GET {{baseUrl}}/api/oss/liulantupian/v0list.js
