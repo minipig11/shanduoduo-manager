@@ -10,13 +10,13 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Add debug logging before dotenv.config()
-console.log('Before dotenv.config():', {
-  OSS_REGION: process.env.OSS_REGION,
-  OSS_ACCESS_KEY_ID: process.env.OSS_ACCESS_KEY_ID ? process.env.OSS_ACCESS_KEY_ID : 'not set',
-  OSS_ACCESS_KEY_SECRET: process.env.OSS_ACCESS_KEY_SECRET ? process.env.OSS_ACCESS_KEY_SECRET : 'not set',
-  VITE_SUPABASE_URL: process.env.VITE_SUPABASE_URL ? process.env.VITE_SUPABASE_URL : 'not set',
-  VITE_SUPABASE_ANON_KEY: process.env.VITE_SUPABASE_ANON_KEY ? process.env.VITE_SUPABASE_ANON_KEY : 'not set',
-});
+// console.log('Before dotenv.config():', {
+//   OSS_REGION: process.env.OSS_REGION,
+//   OSS_ACCESS_KEY_ID: process.env.OSS_ACCESS_KEY_ID ? process.env.OSS_ACCESS_KEY_ID : 'not set',
+//   OSS_ACCESS_KEY_SECRET: process.env.OSS_ACCESS_KEY_SECRET ? process.env.OSS_ACCESS_KEY_SECRET : 'not set',
+//   VITE_SUPABASE_URL: process.env.VITE_SUPABASE_URL ? process.env.VITE_SUPABASE_URL : 'not set',
+//   VITE_SUPABASE_ANON_KEY: process.env.VITE_SUPABASE_ANON_KEY ? process.env.VITE_SUPABASE_ANON_KEY : 'not set',
+// });
 
 // 在非生产环境下加载本地环境变量
 if (process.env.NODE_ENV !== 'production') {
@@ -25,14 +25,14 @@ if (process.env.NODE_ENV !== 'production') {
   });
 }
 
-console.log('Environment:', {
-  NODE_ENV: process.env.NODE_ENV,
-  OSS_REGION: process.env.OSS_REGION,
-  OSS_ACCESS_KEY_ID: process.env.OSS_ACCESS_KEY_ID ? process.env.OSS_ACCESS_KEY_ID : 'not set',
-  OSS_ACCESS_KEY_SECRET: process.env.OSS_ACCESS_KEY_SECRET ? process.env.OSS_ACCESS_KEY_SECRET : 'not set',
-  VITE_SUPABASE_URL: process.env.VITE_SUPABASE_URL ? process.env.VITE_SUPABASE_URL : 'not set',
-  VITE_SUPABASE_ANON_KEY: process.env.VITE_SUPABASE_ANON_KEY ? process.env.VITE_SUPABASE_ANON_KEY : 'not set',
-});
+// console.log('Environment:', {
+//   NODE_ENV: process.env.NODE_ENV,
+//   OSS_REGION: process.env.OSS_REGION,
+//   OSS_ACCESS_KEY_ID: process.env.OSS_ACCESS_KEY_ID ? process.env.OSS_ACCESS_KEY_ID : 'not set',
+//   OSS_ACCESS_KEY_SECRET: process.env.OSS_ACCESS_KEY_SECRET ? process.env.OSS_ACCESS_KEY_SECRET : 'not set',
+//   VITE_SUPABASE_URL: process.env.VITE_SUPABASE_URL ? process.env.VITE_SUPABASE_URL : 'not set',
+//   VITE_SUPABASE_ANON_KEY: process.env.VITE_SUPABASE_ANON_KEY ? process.env.VITE_SUPABASE_ANON_KEY : 'not set',
+// });
 
 const router = express.Router();
 
