@@ -1,0 +1,66 @@
+@baseUrl = http://localhost:3000
+
+### 获取 liulantupian bucket 的 v0list.js 文件
+GET {{baseUrl}}/api/oss/liulantupian/v0list.js
+
+## 获取 liulantupian bucket 的某个图片
+GET {{baseUrl}}/api/oss/liulantupian/images/640.png
+
+### 获取 liulantupian bucket 的图片列表
+GET {{baseUrl}}/api/oss/liulantupian/images
+
+### 获取 shanduoduo bucket 的图片列表
+GET {{baseUrl}}/api/oss/shanduoduo/images
+
+### 上传图片到 liulantupian bucket
+# 请确保在请求中选择一个文件 (例如：在 VS Code 的 REST Client 扩展中，可以点击 'Add File' 或 'Select File')
+POST {{baseUrl}}/api/oss/liulantupian/upload
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+----WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="image"; filename="your_image_name.jpg"
+Content-Type: image/jpeg
+
+< ./path/to/your/image.jpg  # 将此路径替换为您的图片文件路径
+----WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### 上传图片到 shanduoduo bucket
+# 请确保在请求中选择一个文件
+POST {{baseUrl}}/api/oss/shanduoduo/upload
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+----WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="image"; filename="your_image_name.png"
+Content-Type: image/png
+
+< ./path/to/your/image.png  # 将此路径替换为您的图片文件路径
+----WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### 删除 liulantupian bucket 的图片
+# 请将 your_image_name.jpg 替换为要删除的图片名称
+DELETE {{baseUrl}}/api/oss/liulantupian/images/your_image_name.jpg
+
+### 删除 shanduoduo bucket 的图片
+# 请将 your_image_name.png 替换为要删除的图片名称
+DELETE {{baseUrl}}/api/oss/shanduoduo/images/your_image_name.png
+
+### 更新 liulantupian bucket 的图片顺序
+# 请求体应为图片文件名的数组，按照您希望的顺序排列
+POST {{baseUrl}}/api/oss/liulantupian/update-order
+Content-Type: application/json
+
+[
+  "image1.jpg",
+  "image2.png",
+  "image3.gif"
+]
+
+### 更新 shanduoduo bucket 的图片顺序
+# 请求体应为图片文件名的数组，按照您希望的顺序排列
+POST {{baseUrl}}/api/oss/shanduoduo/update-order
+Content-Type: application/json
+
+[
+  "photo_a.jpg",
+  "photo_b.png"
+]

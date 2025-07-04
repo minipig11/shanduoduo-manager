@@ -3,10 +3,10 @@ const API_BASE_URL = process.env.NODE_ENV === 'production'
   : '/api/oss';
 
 // 获取 OSS 中的图片列表
-export const getOssImages = async () => {
+export const getOssImages = async (bucketName) => {
   try {
-    console.log('Requesting:', `${API_BASE_URL}/images`);
-    const response = await fetch(`${API_BASE_URL}/images`);
+    console.log('Requesting:', `${API_BASE_URL}/${bucketName}/images`);
+    const response = await fetch(`${API_BASE_URL}/${bucketName}/images`);
     
     if (!response.ok) {
       const errorText = await response.text();
@@ -20,13 +20,13 @@ export const getOssImages = async () => {
 };
 
 // 上传图片到 OSS
-export const uploadToOss = async (file) => {
+export const uploadToOss = async (file, bucketName) => {
   try {
     const formData = new FormData();
     // 使用原始文件名
     formData.append('image', file, file.name);
 
-    const response = await fetch(`${API_BASE_URL}/upload`, {
+    const response = await fetch(`${API_BASE_URL}/${bucketName}/upload`, {
       method: 'POST',
       body: formData,
     });
@@ -43,9 +43,9 @@ export const uploadToOss = async (file) => {
 };
 
 // 从 OSS 删除图片
-export const deleteFromOss = async (filename) => {
+export const deleteFromOss = async (filename, bucketName) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/images/${filename}`, {
+    const response = await fetch(`${API_BASE_URL}/${bucketName}/images/${filename}`, {
       method: 'DELETE',
     });
     
@@ -61,9 +61,9 @@ export const deleteFromOss = async (filename) => {
 };
 
 // 更新 OSS 中的图片顺序
-export const updateOssOrder = async (imageList) => {
+export const updateOssOrder = async (imageList, bucketName) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/update-order`, {
+    const response = await fetch(`${API_BASE_URL}/${bucketName}/update-order`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

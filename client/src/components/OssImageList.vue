@@ -12,7 +12,7 @@ const showViewer = ref(false)
 const loadImages = async () => {
   loading.value = true
   try {
-    images.value = await getOssImages()
+    images.value = await getOssImages("shanduoduo")
   } catch (error) {
     ElMessage.error('加载图片失败: ' + error.message)
   } finally {
