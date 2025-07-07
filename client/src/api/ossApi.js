@@ -2,6 +2,10 @@ const API_BASE_URL = process.env.NODE_ENV === 'production'
   ? 'https://shanduoduo.sicilyhuang.top/api/oss'
   : '/api/oss';
 
+export const getImageUrl = (imageName, bucketName) => { 
+  return `${API_BASE_URL}/${bucketName}/images/${imageName}`;
+};
+
 // 获取 OSS 中的图片列表
 export const getOssImages = async (bucketName) => {
   try {

@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import OssImageList from '../components/OssImageList.vue'
+import OssImageList from '../components/ImageBrowser.vue'
 import DBList from '../components/DBList.vue';
 
 const router = createRouter({

@@ -34,9 +34,8 @@ coverage
 
 # Environment files
 .env
-.env.localocal
-.env.*.local
-.env.development.local.env.development.local
+.env.*
+!.env.example
 
 
 

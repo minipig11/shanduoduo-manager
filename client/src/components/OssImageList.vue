@@ -7,12 +7,19 @@ const images = ref([])
 const loading = ref(false)
 const currentImage = ref(null)
 const showViewer = ref(false)
+const selectedBucket = ref('shanduoduo')
+
+// Bucket options
+const bucketOptions = [
+  { label: '闪多多', value: 'shanduoduo' },
+  { label: '浏览图片', value: 'liulantupian' }
+]
 
 // Load images from OSS
 const loadImages = async () => {
   loading.value = true
   try {
-    images.value = await getOssImages("shanduoduo")
+    images.value = await getOssImages(selectedBucket.value)
   } catch (error) {
     ElMessage.error('加载图片失败: ' + error.message)
   } finally {
@@ -27,7 +34,7 @@ const handleUpload = async (event) => {
 
   try {
     const file = files[0]
-    await uploadToOss(file)
+    await uploadToOss(file, selectedBucket.value)
     ElMessage.success('上传成功')
     await loadImages()
     event.target.value = '' // Reset input
@@ -45,7 +52,7 @@ const handleDelete = async (image) => {
       type: 'warning'
     })
     
-    await deleteFromOss(image.name || image)
+    await deleteFromOss(image.name || image, selectedBucket.value)
     ElMessage.success('删除成功')
     await loadImages()
   } catch (error) {
@@ -85,23 +92,44 @@ const handleDrop = async (event, newIndex) => {
   }
 }
 
+// Watch for bucket changes
+const handleBucketChange = () => {
+  loadImages()
+}
+
 onMounted(loadImages)
 </script>
 
 <template>
   <div class="image-browser">
-    <!-- Upload Section -->
-    <div class="upload-section">
-      <input
-        type="file"
-        accept="image/*"
-        style="display: none"
-        ref="fileInput"
-        @change="handleUpload"
+    <div class="top-controls">
+      <!-- Bucket Selector -->
+      <el-select
+        v-model="selectedBucket"
+        placeholder="选择存储桶"
+        @change="handleBucketChange"
       >
-      <el-button type="primary" @click="$refs.fileInput.click()">
-        上传图片
-      </el-button>
+        <el-option
+          v-for="option in bucketOptions"
+          :key="option.value"
+          :label="option.label"
+          :value="option.value"
+        />
+      </el-select>
+
+      <!-- Upload Button -->
+      <div class="upload-section">
+        <input
+          type="file"
+          accept="image/*"
+          style="display: none"
+          ref="fileInput"
+          @change="handleUpload"
+        >
+        <el-button type="primary" @click="$refs.fileInput.click()">
+          上传图片
+        </el-button>
+      </div>
     </div>
 
     <!-- Image Grid -->
@@ -149,8 +177,14 @@ onMounted(loadImages)
   padding: 20px;
 }
 
-.upload-section {
+.top-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 20px;
+}
+
+.upload-section {
   text-align: right;
 }
 
