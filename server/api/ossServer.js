@@ -89,11 +89,6 @@ const OSS_LIST_FILE = 'v0list.js';
 // Add updateList helper function for OSS
 const updateOssList = async (client, action, filename, bucketName) => {
   try {
-    if (bucketName !== BUCKET_LIULANTUPIAN) {
-      console.log(`Skipping v0list.js update for bucket: ${bucketName}`);
-      return true; // Only update v0list.js for liulantupian bucket
-    }
-
     let currentList = [];
     
     // Read existing list from OSS
@@ -154,22 +149,20 @@ router.get('/:bucketName/images', async (req, res) => {
 
     // Get ordered list from v0list.js
     let orderedList = [];
-    if (bucketName === BUCKET_LIULANTUPIAN) {
-      try {
-        const listResult = await client.get(OSS_LIST_FILE);
-        console.log("listResult:"+listResult);
-        const content = listResult.content.toString();
-        console.log("content:"+content);
-        const jsonStr = content
-          .replace('module.exports = ', '')
-          .replace(/;$/, '')
-          .trim();
-        console.log("jsonStr:"+jsonStr);
-        orderedList = JSON.parse(jsonStr);
-      } catch (error) {
-        if (error.code !== 'NoSuchKey') {
-          console.warn('Error reading list file:', error);
-        }
+    try {
+      const listResult = await client.get(OSS_LIST_FILE);
+      console.log("listResult:"+listResult);
+      const content = listResult.content.toString();
+      console.log("content:"+content);
+      const jsonStr = content
+        .replace('module.exports = ', '')
+        .replace(/;$/, '')
+        .trim();
+      console.log("jsonStr:"+jsonStr);
+      orderedList = JSON.parse(jsonStr);
+    } catch (error) {
+      if (error.code !== 'NoSuchKey') {
+        console.warn('Error reading list file:', error);
       }
     }
 
@@ -188,9 +181,6 @@ router.get('/:bucketName/images', async (req, res) => {
 
     // Sort files according to orderedList
     const sortedFiles = files.sort((a, b) => {
-      if (bucketName !== BUCKET_LIULANTUPIAN) {
-        return 0; // Don't sort if not liulantupian bucket
-      }
 
       const indexA = orderedList.indexOf(a.name);
       const indexB = orderedList.indexOf(b.name);
@@ -302,11 +292,6 @@ router.post('/:bucketName/update-order', async (req, res) => {
     if (!Array.isArray(req.body)) {
       throw new Error('Request body must be an array of filenames');
     }
-    
-    if (bucketName !== BUCKET_LIULANTUPIAN) {
-      console.log(`Skipping update-order for bucket: ${bucketName}. Only ${BUCKET_LIULANTUPIAN} bucket supports order updates.`);
-      return res.status(400).json({ error: `Bucket ${bucketName} does not support order updates.` });
-    }
 
     const client = getOssClient(bucketName);
     if (!client) {
@@ -337,10 +322,6 @@ router.use((err, req, res, next) => {
 router.get('/:bucketName/v0list.js', async (req, res) => {
   const bucketName = req.params.bucketName;
   try {
-    if (bucketName !== BUCKET_LIULANTUPIAN) {
-      return res.status(400).json({ error: `Bucket ${bucketName} does not maintain a v0list.js file.` });
-    }
-
     const client = getOssClient(bucketName);
     if (!client) {
       return res.status(500).json({ error: 'OSS client not initialized. Check environment variables and bucket name.' });
@@ -349,10 +330,6 @@ router.get('/:bucketName/v0list.js', async (req, res) => {
     try {
       const result = await client.get(OSS_LIST_FILE);
       const content = result.content.toString();
-      // const jsonStr = content
-      //   .replace('module.exports = ', '')
-      //   .replace(/;$/, '')
-      //   .trim();
       res.send(content);
     } catch (error) {
       if (error.code === 'NoSuchKey') {

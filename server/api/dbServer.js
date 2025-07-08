@@ -13,7 +13,7 @@ router.use((req, res, next) => {
 
 // 创建新商品
 export async function createItem(itemData) {
-  const { id, title, image, total_units, available_units, location, expire_at } = itemData;
+  const { id, title, image, price, quantity, total_units, available_units, location, expire_at } = itemData;
   
   try {
     // 插入商品信息
@@ -23,6 +23,8 @@ export async function createItem(itemData) {
         id,
         title,
         image,
+        price,
+        quantity,
         total_units,
         available_units,
         location,

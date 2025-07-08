@@ -1,27 +1,24 @@
-### Get all items (Local)
-GET http://localhost:3000/api/db/shanduoduo
+@baseUrl = http://localhost:3000
+# @baseUrl = https://shanduoduo.sicilyhuang.top/
+
+### 获取所有商品 (Local)
+GET {{baseUrl}}/api/db/shanduoduo
 Accept: application/json
 
-### Get all items (Production)
-GET https://shanduoduo.sicilyhuang.top/api/db/shanduoduo
+### 根据ID获取商品详情 (Local)
+GET {{baseUrl}}/api/db/items/DR202506281002
 Accept: application/json
 
-### Get item by ID (Local)
-GET http://localhost:3000/api/db/items/DR202506281001
-Accept: application/json
-
-### Get item by ID (Production)
-GET https://shanduoduo.sicilyhuang.top/api/db/items/DR202506281003
-Accept: application/json
-
-### Create new item (Local)
-POST http://localhost:3000/api/db/items
+### 创建新商品 (Local)
+POST {{baseUrl}}/api/db/items
 Content-Type: application/json
 
 {
-    "id": "DR202506281002",
+    "id": "DR202506281004",
     "title": "测试商品",
     "image": "test.jpg",
+    "price": 10.50,
+    "quantity": 100,
     "total_units": 12,
     "available_units": 6,
     "location": "测试位置",
@@ -36,24 +33,17 @@ Content-Type: application/json
     ]
 }
 
-### Create new item (Production)
-POST https://shanduoduo.sicilyhuang.top/api/db/items
+### 添加参与者 (Local)
+POST {{baseUrl}}/api/db/items/DR202506281004/participants
 Content-Type: application/json
 
 {
-    "id": "DR202506281003",
-    "title": "测试商品",
-    "image": "test.jpg",
-    "total_units": 12,
-    "available_units": 6,
-    "location": "测试位置",
-    "expire_at": 1698588000,
-    "participants": [
-        {
-            "type": "owner",
-            "units": 6,
-            "user_name": "测试用户",
-            "time": null
-        }
-    ]
+  "type": "claimed",
+  "units": 2,
+  "user_name": "测试用户",
+  "time": 1698500000
 }
+
+### 删除参与者 (Local)
+DELETE {{baseUrl}}/api/db/items/DR202506281004/participants/1
+Accept: application/json

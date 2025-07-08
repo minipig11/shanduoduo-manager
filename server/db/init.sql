@@ -3,6 +3,8 @@ CREATE TABLE shanduoduo_items (
   id VARCHAR(15) PRIMARY KEY,      -- 商品ID，如 DR202506281001
   title VARCHAR(100) NOT NULL,     -- 商品标题
   image VARCHAR(255) NOT NULL,     -- 图片文件名
+  price FLOAT,                     -- 价格
+  quantity INTEGER NOT NULL,       -- 数量
   total_units INTEGER NOT NULL,    -- 总份数
   available_units INTEGER NOT NULL, -- 可用份数
   location VARCHAR(100) NOT NULL,  -- 位置信息
