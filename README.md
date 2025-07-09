@@ -93,3 +93,7 @@ npm install
 cd ../client
 rm -r node_modules
 npm install
+
+# 测试过程
+http://localhost:5173/oss-images
+http://localhost:3000/api/oss/shanduoduo/v0list.js

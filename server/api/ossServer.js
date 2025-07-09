@@ -94,15 +94,15 @@ const updateOssList = async (client, action, filename, bucketName) => {
     // Read existing list from OSS
     try {
       const result = await client.get(OSS_LIST_FILE);
-      console.log("listResult:"+result);
+      // console.log("listResult:"+result);
       const content = result.content.toString();
-      console.log("content:"+content);
+      // console.log("content:"+content);
       // Handle module.exports format
       const jsonStr = content
         .replace('module.exports = ', '')
         .replace(/;$/, '')
         .trim();
-      console.log("jsonStr:"+jsonStr);
+      // console.log("jsonStr:"+jsonStr);
       currentList = JSON.parse(jsonStr);
     } catch (error) {
       if (error.code !== 'NoSuchKey') {
@@ -151,46 +151,29 @@ router.get('/:bucketName/images', async (req, res) => {
     let orderedList = [];
     try {
       const listResult = await client.get(OSS_LIST_FILE);
-      console.log("listResult:"+listResult);
+      // console.log("listResult:"+listResult);
       const content = listResult.content.toString();
-      console.log("content:"+content);
+      // console.log("content:"+content);
       const jsonStr = content
         .replace('module.exports = ', '')
         .replace(/;$/, '')
         .trim();
-      console.log("jsonStr:"+jsonStr);
+      // console.log("jsonStr:"+jsonStr);
       orderedList = JSON.parse(jsonStr);
+      res.json(orderedList);
+      return;
     } catch (error) {
-      if (error.code !== 'NoSuchKey') {
+      if (error.code === 'NoSuchKey') {
+        console.warn('Error reading list file:', error); // Still warn but don't create here
+        res.json([]); // Return empty array if not found
+        return;
+      } else {
         console.warn('Error reading list file:', error);
       }
+      res.status(500).json({ error: error.message }); // Return 500 for other errors
+      return;
     }
 
-    // Get all files from OSS
-    const result = await client.list({
-      prefix: OSS_PREFIX,
-      'max-keys': 1000
-    });
-    
-    const files = result.objects
-      .map(obj => ({
-        name: obj.name.replace(OSS_PREFIX, ''),
-        url: client.signatureUrl(obj.name)
-      }))
-      .filter(file => file.name !== 'v0list.js');
-
-    // Sort files according to orderedList
-    const sortedFiles = files.sort((a, b) => {
-
-      const indexA = orderedList.indexOf(a.name);
-      const indexB = orderedList.indexOf(b.name);
-      if (indexA === -1) return 1;
-      if (indexB === -1) return -1;
-      return indexA - indexB;
-    });
-    
-    console.log('Sending response:', sortedFiles);
-    res.json(sortedFiles);
   } catch (error) {
     console.error('Error in /images endpoint:', error);
     res.status(500).json({ error: error.message });
@@ -333,10 +316,14 @@ router.get('/:bucketName/v0list.js', async (req, res) => {
       res.send(content);
     } catch (error) {
       if (error.code === 'NoSuchKey') {
-        return res.status(404).json({ error: 'v0list.js not found in this bucket.' });
+        console.log(`OSS_LIST_FILE not found for ${bucketName}. Creating default.`);
+        const defaultContent = 'module.exports = [];';
+        await client.put(OSS_LIST_FILE, Buffer.from(defaultContent));
+        res.send(defaultContent);
+      } else {
+        console.error('Error reading v0list.js:', error);
+        res.status(500).json({ error: error.message });
       }
-      console.error('Error reading v0list.js:', error);
-      res.status(500).json({ error: error.message });
     }
 
   } catch (error) {

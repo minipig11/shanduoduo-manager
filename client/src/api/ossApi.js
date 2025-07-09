@@ -9,14 +9,23 @@ export const getImageUrl = (imageName, bucketName) => {
 // 获取 OSS 中的图片列表
 export const getOssImages = async (bucketName) => {
   try {
-    console.log('Requesting:', `${API_BASE_URL}/${bucketName}/images`);
+    console.log('Requesting images from:', `${API_BASE_URL}/${bucketName}/images`);
     const response = await fetch(`${API_BASE_URL}/${bucketName}/images`);
     
     if (!response.ok) {
       const errorText = await response.text();
       throw new Error(`HTTP error! status: ${response.status}, body: ${errorText}`);
     }
-    return await response.json();
+    let orderedList = await response.json();
+    console.log('Received raw image list:', orderedList);
+    // 将 orderedList 转换为 { name: string, url: string } 形式的数组
+    orderedList = orderedList.map(imageName => ({
+      name: imageName,
+      url: getImageUrl(imageName, bucketName)
+    }));
+    console.log('Processed image list:', orderedList);
+
+    return orderedList;
   } catch (error) {
     console.error('获取 OSS 图片列表错误:', error);
     throw error;

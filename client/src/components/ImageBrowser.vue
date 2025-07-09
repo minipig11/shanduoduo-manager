@@ -138,7 +138,8 @@ export default {
     async handleDragEnd(event) {
       try {
         // images 数组已被 v-model 更新
-        await updateOssOrderApi(this.images, this.selectedBucket); // 假设 updateOssOrder 接收图片数组和存储桶
+        const imageNames = this.images.map(image => image.name);
+        await updateOssOrderApi(imageNames, this.selectedBucket); // 假设 updateOssOrder 接收图片名称数组和存储桶
         ElMessage.success('图片顺序更新成功');
       } catch (error) {
         ElMessage.error('更新图片顺序失败: ' + error.message);
