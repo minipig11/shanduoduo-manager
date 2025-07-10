@@ -1,5 +1,5 @@
-@baseUrl = http://localhost:3000
-# @baseUrl = https://shanduoduo.sicilyhuang.top/
+# @baseUrl = http://localhost:3000
+@baseUrl = https://shanduoduo.sicilyhuang.top/
 
 ### 获取所有商品 (Local)
 GET {{baseUrl}}/api/db/items
@@ -10,7 +10,7 @@ GET {{baseUrl}}/api/db/items/1
 Accept: application/json
 
 ### 创建新商品 (Local)
-POST {{baseUrl}}/api/db/items
+POST {{baseUrl}}/api/db/newItem
 Content-Type: application/json
 
 {

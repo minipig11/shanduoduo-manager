@@ -331,7 +331,7 @@ router.get('/items', async (req, res) => {
 });
 
 // 创建商品路由
-router.post('/items', async (req, res) => {
+router.post('/newItem', async (req, res) => {
   try {
     const result = await createItem(req.body);
     if (!result.success) {
