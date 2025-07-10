@@ -2,11 +2,11 @@
 # @baseUrl = https://shanduoduo.sicilyhuang.top/
 
 ### 获取所有商品 (Local)
-GET {{baseUrl}}/api/db/shanduoduo
+GET {{baseUrl}}/api/db/items
 Accept: application/json
 
 ### 根据ID获取商品详情 (Local)
-GET {{baseUrl}}/api/db/items/DR202506281002
+GET {{baseUrl}}/api/db/items/1
 Accept: application/json
 
 ### 创建新商品 (Local)
@@ -14,27 +14,28 @@ POST {{baseUrl}}/api/db/items
 Content-Type: application/json
 
 {
-    "id": "DR202506281004",
-    "title": "测试商品",
-    "image": "test.jpg",
-    "price": 10.50,
-    "quantity": 100,
-    "total_units": 12,
-    "available_units": 6,
-    "location": "测试位置",
-    "expire_at": 1698588000,
-    "participants": [
-        {
-            "type": "owner",
-            "units": 6,
-            "openid": "test_openid_123",
-            "time": null
-        }
-    ]
+  "title": "测试商品",
+  "image": "test.jpg",
+  "price": 99.99,
+  "quantity": 1,
+  "total_units": 12,
+  "location": "测试位置",
+  "expire_at": 1698588000,
+  "participants": [
+    {
+      "type": "owner",
+      "units": 6,
+      "openid": "test_openid_123"
+    }
+  ]
 }
 
+### 获取商品详情 (Local)
+GET {{baseUrl}}/api/db/items/1
+Accept: application/json
+
 ### Add participant with openid
-POST {{baseUrl}}/api/db/items/DR202506281004/participants
+POST {{baseUrl}}/api/db/items/1/participants
 Content-Type: application/json
 
 {
@@ -45,9 +46,9 @@ Content-Type: application/json
 }
 
 ### 删除参与者 (Local)
-DELETE {{baseUrl}}/api/db/items/DR202506281004/participants/1
+DELETE {{baseUrl}}/api/db/items/1/participants/1
 Accept: application/json
 
 ### 删除参与者通过 OpenID (Local)
-DELETE {{baseUrl}}/api/db/items/DR202506281004/participants/openid/test_openid_123
+DELETE {{baseUrl}}/api/db/items/1/participants/openid/test_openid_123
 Accept: application/json

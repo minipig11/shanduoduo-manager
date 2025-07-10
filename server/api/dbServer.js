@@ -13,42 +13,40 @@ router.use((req, res, next) => {
 
 // 创建新商品
 export async function createItem(itemData) {
-  const { id, title, image, price, quantity, total_units, available_units, location, expire_at } = itemData;
-  
   try {
-    // 插入商品信息
     const { data: item, error: itemError } = await supabase
       .from('shanduoduo_items')
       .insert([{
-        id,
-        title,
-        image,
-        price,
-        quantity,
-        total_units,
-        available_units,
-        location,
-        expire_at
+        title: itemData.title,
+        image: itemData.image,
+        price: itemData.price || null,
+        quantity: itemData.quantity,
+        total_units: itemData.total_units,
+        available_units: itemData.total_units, // 初始可用份数等于总份数
+        location: itemData.location,
+        expire_at: itemData.expire_at
       }])
       .select()
       .single();
 
     if (itemError) throw itemError;
 
-    // 插入参与者信息
-    const participants = itemData.participants.map(p => ({
-      item_id: id,
-      type: p.type,
-      units: p.units,
-      user_name: p.user_name,
-      claim_time: p.time || null
-    }));
+    // 如果有初始参与者（owner），创建参与者记录
+    if (itemData.participants && itemData.participants.length > 0) {
+      const { error: participantError } = await supabase
+        .from('shanduoduo_participants')
+        .insert(
+          itemData.participants.map(p => ({
+            item_id: item.id,  // 使用自动生成的 id
+            openid: p.openid,
+            type: p.type,
+            units: p.units,
+            claim_time: p.claim_time || null
+          }))
+        );
 
-    const { error: participantError } = await supabase
-      .from('shanduoduo_participants')
-      .insert(participants);
-
-    if (participantError) throw participantError;
+      if (participantError) throw participantError;
+    }
 
     return { success: true, data: item };
   } catch (error) {
@@ -85,6 +83,23 @@ export async function getItemDetails(itemId) {
         participants: participants
       }
     };
+  } catch (error) {
+    console.error('获取商品详情失败:', error);
+    return { success: false, error };
+  }
+}
+
+// 获取商品详情（包括参与者信息）
+export async function getItemById(id) {
+  try {
+    const { data: item, error: itemError } = await supabase
+      .from('shanduoduo_items')
+      .select('*, shanduoduo_participants(*)')
+      .eq('id', parseInt(id))  // 确保 id 是数字类型
+      .single();
+
+    if (itemError) throw itemError;
+    return { success: true, data: item };
   } catch (error) {
     console.error('获取商品详情失败:', error);
     return { success: false, error };
@@ -211,7 +226,7 @@ export async function removeParticipantByOpenid(itemId, openid) {
     const { data: participant, error: participantError } = await supabase
       .from('shanduoduo_participants')
       .select('units')
-      .eq('item_id', itemId)
+      .eq('item_id', itemId)  // 现在使用数字类型的 item_id
       .eq('openid', openid)
       .single();
 
@@ -221,7 +236,7 @@ export async function removeParticipantByOpenid(itemId, openid) {
     const { data: item, error: itemError } = await supabase
       .from('shanduoduo_items')
       .select('available_units')
-      .eq('id', itemId)
+      .eq('id', itemId)  // 使用数字类型的 id
       .single();
 
     if (itemError) throw itemError;
@@ -302,7 +317,7 @@ export async function upsertWxUser(openid) {
 }
 
 // API 路由
-router.get('/shanduoduo', async (req, res) => {
+router.get('/items', async (req, res) => {
   try {
     const result = await getItemData();
     if (!result.success) {

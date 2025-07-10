@@ -6,7 +6,7 @@ const API_BASE_URL = process.env.NODE_ENV === 'production'
 export async function getShanduoduoData() {
   try {
     console.log('Requesting shanduoduo data...', { API_BASE_URL });
-    const response = await fetch(`${API_BASE_URL}/shanduoduo`);
+    const response = await fetch(`${API_BASE_URL}/items`);
     
     if (!response.ok) {
       const errorText = await response.text();

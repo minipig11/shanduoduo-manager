@@ -1,6 +1,6 @@
 -- 主表：商品信息
 CREATE TABLE shanduoduo_items (
-  id VARCHAR(15) PRIMARY KEY,      -- 商品ID，如 DR202506281001
+  id SERIAL PRIMARY KEY,            -- 自增主键
   title VARCHAR(100) NOT NULL,     -- 商品标题
   image VARCHAR(255) NOT NULL,     -- 图片文件名
   price FLOAT,                     -- 价格
@@ -22,7 +22,7 @@ create policy "Anyone can add new todos" on shanduoduo_items for
 -- 参与者表
 CREATE TABLE shanduoduo_participants (
   id SERIAL PRIMARY KEY,           -- 自增主键
-  item_id VARCHAR(15) REFERENCES shanduoduo_items(id), -- 关联商品ID
+  item_id INTEGER REFERENCES shanduoduo_items(id), -- 关联商品ID
   user_id INTEGER REFERENCES wx_users(id), -- 关联用户ID
   openid VARCHAR(64) NOT NULL,     -- 用户openid
   type VARCHAR(20) NOT NULL,       -- 参与者类型：owner/claimed
