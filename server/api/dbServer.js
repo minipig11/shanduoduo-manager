@@ -128,40 +128,30 @@ export async function getItemData() {
 // 添加参与者
 export async function addParticipant(itemId, participantData) {
   try {
-    const { type, units, user_name, time } = participantData;
+    const { type, units, openid, claim_time } = participantData;
 
-    // 获取当前商品信息
-    const { data: item, error: itemError } = await supabase
-      .from('shanduoduo_items')
-      .select('available_units')
-      .eq('id', itemId)
+    // First get user_id from wx_users table
+    const { data: userData, error: userError } = await supabase
+      .from('wx_users')
+      .select('id')
+      .eq('openid', openid)
       .single();
 
-    if (itemError) throw itemError;
-    if (item.available_units < units) {
-      throw new Error('可用份数不足');
-    }
+    if (userError) throw userError;
 
-    // 添加参与者
+    // Add participant with user_id and openid
     const { error: participantError } = await supabase
       .from('shanduoduo_participants')
       .insert([{
         item_id: itemId,
+        user_id: userData.id,
+        openid: openid,
         type,
         units,
-        user_name,
-        claim_time: time || null
+        claim_time: claim_time || null
       }]);
 
     if (participantError) throw participantError;
-
-    // 更新商品可用份数
-    const { error: updateError } = await supabase
-      .from('shanduoduo_items')
-      .update({ available_units: item.available_units - units })
-      .eq('id', itemId);
-
-    if (updateError) throw updateError;
 
     return { success: true };
   } catch (error) {
@@ -210,6 +200,103 @@ export async function removeParticipant(itemId, participantId) {
     return { success: true };
   } catch (error) {
     console.error('删除参与者失败:', error);
+    return { success: false, error };
+  }
+}
+
+// 通过 openid 删除参与者
+export async function removeParticipantByOpenid(itemId, openid) {
+  try {
+    // 获取参与者信息
+    const { data: participant, error: participantError } = await supabase
+      .from('shanduoduo_participants')
+      .select('units')
+      .eq('item_id', itemId)
+      .eq('openid', openid)
+      .single();
+
+    if (participantError) throw participantError;
+
+    // 获取当前商品信息
+    const { data: item, error: itemError } = await supabase
+      .from('shanduoduo_items')
+      .select('available_units')
+      .eq('id', itemId)
+      .single();
+
+    if (itemError) throw itemError;
+
+    // 删除参与者
+    const { error: deleteError } = await supabase
+      .from('shanduoduo_participants')
+      .delete()
+      .eq('item_id', itemId)
+      .eq('openid', openid);
+
+    if (deleteError) throw deleteError;
+
+    // 更新商品可用份数
+    const { error: updateError } = await supabase
+      .from('shanduoduo_items')
+      .update({ available_units: item.available_units + participant.units })
+      .eq('id', itemId);
+
+    if (updateError) throw updateError;
+
+    return { success: true };
+  } catch (error) {
+    console.error('删除参与者失败:', error);
+    return { success: false, error };
+  }
+}
+
+// Create or update WeChat user
+export async function upsertWxUser(openid) {
+  try {
+    // 查询用户是否存在
+    const { data: existingUser, error: queryError } = await supabase
+      .from('wx_users')
+      .select('*')
+      .eq('openid', openid)
+      .single();
+
+    if (queryError && queryError.code !== 'PGRST116') { // PGRST116 is "not found" error
+      throw queryError;
+    }
+
+    if (existingUser) {
+      // 用户已存在，返回现有用户信息
+      return {
+        success: true,
+        isNewUser: false,
+        user: existingUser
+      };
+    }
+
+    // 用户不存在，创建新用户
+    const { data: newUser, error: insertError } = await supabase
+      .from('wx_users')
+      .insert([
+        {
+          openid,
+          user_name: null,
+          avatar_url: null,
+          created_at: new Date().toISOString()
+        }
+      ])
+      .select()
+      .single();
+
+    if (insertError) throw insertError;
+
+    return {
+      success: true,
+      isNewUser: true,
+      user: newUser
+    };
+
+  } catch (error) {
+    console.error('微信用户操作失败:', error);
     return { success: false, error };
   }
 }
@@ -276,6 +363,46 @@ router.delete('/items/:itemId/participants/:participantId', async (req, res) => 
     }
     res.json({ success: true });
   } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// 通过 openid 删除参与者路由
+router.delete('/items/:itemId/participants/openid/:openid', async (req, res) => {
+  try {
+    const result = await removeParticipantByOpenid(req.params.itemId, req.params.openid);
+    if (!result.success) {
+      return res.status(500).json({ error: result.error });
+    }
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// 添加微信用户路由
+router.post('/wx_users', async (req, res) => {
+  try {
+    const { openid } = req.body;
+
+    if (!openid) {
+      return res.status(400).json({ error: 'Missing openid parameter' });
+    }
+
+    const result = await upsertWxUser(openid);
+    
+    if (!result.success) {
+      return res.status(500).json({ error: result.error });
+    }
+
+    res.json({
+      success: true,
+      isNewUser: result.isNewUser,
+      user: result.user
+    });
+
+  } catch (error) {
+    console.error('处理微信用户请求失败:', error);
     res.status(500).json({ error: error.message });
   }
 });

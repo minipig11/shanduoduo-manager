@@ -27,23 +27,27 @@ Content-Type: application/json
         {
             "type": "owner",
             "units": 6,
-            "user_name": "测试用户",
+            "openid": "test_openid_123",
             "time": null
         }
     ]
 }
 
-### 添加参与者 (Local)
+### Add participant with openid
 POST {{baseUrl}}/api/db/items/DR202506281004/participants
 Content-Type: application/json
 
 {
   "type": "claimed",
   "units": 2,
-  "user_name": "测试用户",
-  "time": 1698500000
+  "openid": "test_openid_123",
+  "claim_time": 1698500000
 }
 
 ### 删除参与者 (Local)
 DELETE {{baseUrl}}/api/db/items/DR202506281004/participants/1
+Accept: application/json
+
+### 删除参与者通过 OpenID (Local)
+DELETE {{baseUrl}}/api/db/items/DR202506281004/participants/openid/test_openid_123
 Accept: application/json

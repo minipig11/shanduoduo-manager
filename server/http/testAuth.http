@@ -1,0 +1,21 @@
+### Test WeChat Login - Valid Code
+POST http://localhost:3000/api/auth/login
+Content-Type: application/json
+
+{
+  "code": "0c3l40ll2Uz3Uf4Ne9ll2iEAym2l40lP"
+}
+
+### Test WeChat Login - Missing Code
+POST http://localhost:3000/api/auth/login
+Content-Type: application/json
+
+{}
+
+### Test WeChat Login - Invalid Code
+POST http://localhost:3000/api/auth/login
+Content-Type: application/json
+
+{
+  "code": "invalid_code"
+}
