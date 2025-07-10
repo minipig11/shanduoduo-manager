@@ -7,6 +7,7 @@ CREATE TABLE shanduoduo_items (
   quantity INTEGER NOT NULL,       -- 数量
   total_units INTEGER NOT NULL,    -- 总份数
   available_units INTEGER NOT NULL, -- 可用份数
+  unit VARCHAR(10) NOT NULL, -- 单位 DEFAULT '个'
   location VARCHAR(100) NOT NULL,  -- 位置信息
   expire_at BIGINT NOT NULL,       -- 过期时间戳
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc', now()),

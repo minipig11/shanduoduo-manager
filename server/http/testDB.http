@@ -1,5 +1,5 @@
-# @baseUrl = http://localhost:3000
-@baseUrl = https://shanduoduo.sicilyhuang.top/
+@baseUrl = http://localhost:3000
+# @baseUrl = https://shanduoduo.sicilyhuang.top/
 
 ### 获取所有商品 (Local)
 GET {{baseUrl}}/api/db/items
@@ -19,6 +19,7 @@ Content-Type: application/json
   "price": 99.99,
   "quantity": 1,
   "total_units": 12,
+  "unit": "盒",
   "location": "测试位置",
   "expire_at": 1698588000,
   "participants": [

@@ -23,6 +23,7 @@ export async function createItem(itemData) {
         quantity: itemData.quantity,
         total_units: itemData.total_units,
         available_units: itemData.total_units, // 初始可用份数等于总份数
+        unit: itemData.unit, // 添加单位字段
         location: itemData.location,
         expire_at: itemData.expire_at
       }])
