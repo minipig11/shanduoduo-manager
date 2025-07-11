@@ -6,7 +6,7 @@ CREATE TABLE shanduoduo_items (
   price FLOAT,                     -- 价格
   quantity INTEGER NOT NULL,       -- 数量
   flavor JSONB DEFAULT '[]'::jsonb, -- 口味
-  reserved INTEGER NOT NULL,       -- 已预定份数
+  reserved INTEGER NOT NULL,       -- 保留
   unit VARCHAR(10) NOT NULL,       -- 单位
   location VARCHAR(100) NOT NULL,  -- 位置信息
   expire_at BIGINT NOT NULL,       -- 过期时间戳
@@ -28,7 +28,7 @@ CREATE TABLE shanduoduo_participants (
   openid VARCHAR(64) NOT NULL,     -- 用户openid
   type VARCHAR(20) NOT NULL,       -- 参与者类型：owner/claimed
   flavor JSONB DEFAULT '[]'::jsonb, -- 口味
-  units INTEGER NOT NULL,          -- 参与份数
+  units INTEGER NOT NULL,          -- 保留
   claim_time BIGINT,              -- 认领时间戳
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc', now())
 );

@@ -21,11 +21,14 @@ export async function createItem(itemData) {
         image: itemData.image,
         price: itemData.price || null,
         quantity: itemData.quantity,
-        reserved: 0,  // Initially no units are reserved
+        reserved: 0, 
         unit: itemData.unit || '个',
         location: itemData.location,
         expire_at: itemData.expire_at,
-        flavor: itemData.flavor || []
+        flavor: itemData.flavor.map(flavor => ({
+          name: flavor.name,
+          total: flavor.total 
+        }))
       }])
       .select()
       .single();
@@ -41,9 +44,12 @@ export async function createItem(itemData) {
             item_id: item.id,  // 使用自动生成的 id
             openid: p.openid,
             type: p.type,
-            units: p.units,
-            flavor: itemData.flavor || [],
-            claim_time: p.claim_time || null
+            units: 0,
+            claim_time: p.claim_time || null,
+            flavor: p.flavor.map(flavor => ({
+              name: flavor.name,
+              claimed: flavor.claimed  // Send all flavors without filtering
+            }))
           }))
         );
 
