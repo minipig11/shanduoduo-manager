@@ -17,16 +17,15 @@ Content-Type: application/json
   "title": "测试商品",
   "image": "test.jpg",
   "price": 99.99,
-  "quantity": 1,
-  "total_units": 12,
+  "quantity": 12,
   "unit": "盒",
   "location": "测试位置",
   "expire_at": 1698588000,
-  "participants": [
+  "flavor": [
     {
-      "type": "owner",
-      "units": 6,
-      "openid": "test_openid_123"
+      "name": "芝士",
+      "total": 10,
+      "quantity": 5
     }
   ]
 }
@@ -43,6 +42,12 @@ Content-Type: application/json
   "type": "claimed",
   "units": 2,
   "openid": "test_openid_123",
+  "flavor": [
+    {
+      "name": "芝士",
+      "quantity": 2
+    }
+  ],
   "claim_time": 1698500000
 }
 

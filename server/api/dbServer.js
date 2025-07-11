@@ -21,11 +21,11 @@ export async function createItem(itemData) {
         image: itemData.image,
         price: itemData.price || null,
         quantity: itemData.quantity,
-        total_units: itemData.total_units,
-        available_units: itemData.total_units, // 初始可用份数等于总份数
-        unit: itemData.unit, // 添加单位字段
+        reserved: 0,  // Initially no units are reserved
+        unit: itemData.unit || '个',
         location: itemData.location,
-        expire_at: itemData.expire_at
+        expire_at: itemData.expire_at,
+        flavor: itemData.flavor || []
       }])
       .select()
       .single();
@@ -42,6 +42,7 @@ export async function createItem(itemData) {
             openid: p.openid,
             type: p.type,
             units: p.units,
+            flavor: itemData.flavor || [],
             claim_time: p.claim_time || null
           }))
         );
@@ -144,7 +145,7 @@ export async function getItemData() {
 // 添加参与者
 export async function addParticipant(itemId, participantData) {
   try {
-    const { type, units, openid, claim_time } = participantData;
+    const { type, units, openid, claim_time, flavor } = participantData;
 
     // First get user_id from wx_users table
     const { data: userData, error: userError } = await supabase
@@ -164,6 +165,7 @@ export async function addParticipant(itemId, participantData) {
         openid: openid,
         type,
         units,
+        flavor: flavor || [],
         claim_time: claim_time || null
       }]);
 

@@ -5,9 +5,9 @@ CREATE TABLE shanduoduo_items (
   image VARCHAR(255) NOT NULL,     -- 图片文件名
   price FLOAT,                     -- 价格
   quantity INTEGER NOT NULL,       -- 数量
-  total_units INTEGER NOT NULL,    -- 总份数
-  available_units INTEGER NOT NULL, -- 可用份数
-  unit VARCHAR(10) NOT NULL, -- 单位 DEFAULT '个'
+  flavor JSONB DEFAULT '[]'::jsonb, -- 口味
+  reserved INTEGER NOT NULL,       -- 已预定份数
+  unit VARCHAR(10) NOT NULL,       -- 单位
   location VARCHAR(100) NOT NULL,  -- 位置信息
   expire_at BIGINT NOT NULL,       -- 过期时间戳
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc', now()),
@@ -27,6 +27,7 @@ CREATE TABLE shanduoduo_participants (
   user_id INTEGER REFERENCES wx_users(id), -- 关联用户ID
   openid VARCHAR(64) NOT NULL,     -- 用户openid
   type VARCHAR(20) NOT NULL,       -- 参与者类型：owner/claimed
+  flavor JSONB DEFAULT '[]'::jsonb, -- 口味
   units INTEGER NOT NULL,          -- 参与份数
   claim_time BIGINT,              -- 认领时间戳
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc', now())
@@ -73,5 +74,11 @@ create policy "Anyone can add new todos" on wx_users for
   -- 2. 创建一个触发器，在 wx_users 表每次更新之前调用上面的函数
   CREATE TRIGGER update_wx_users_updated_at
   BEFORE UPDATE ON wx_users
+  FOR EACH ROW
+  EXECUTE PROCEDURE update_updated_at_column();
+  
+  -- 2. 创建一个触发器，在 shanduoduo_items 表每次更新之前调用上面的函数
+  CREATE TRIGGER update_shanduoduo_items_updated_at
+  BEFORE UPDATE ON shanduoduo_items
   FOR EACH ROW
   EXECUTE PROCEDURE update_updated_at_column();
