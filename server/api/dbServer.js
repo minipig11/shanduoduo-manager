@@ -56,6 +56,8 @@ export async function createItem(itemData) {
       if (participantError) throw participantError;
     }
 
+    
+
     return { success: true, data: item };
   } catch (error) {
     console.error('创建商品失败:', error);
@@ -114,10 +116,19 @@ export async function getItemById(id) {
   }
 }
 
+// Add a helper function to calculate total claimed units
+function calculateTotalClaimed(participants) {
+  return participants.reduce((sum, p) => {
+    const participantClaimed = p.flavor?.reduce((flavorSum, f) => 
+      flavorSum + (f.claimed || 0), 0) || 0;
+    return sum + participantClaimed;
+  }, 0);
+}
+
 // 获取所有商品列表
 export async function getItemData() {
   try {
-    // 获取所有商品信息
+    // Get all items and their participants
     const { data: items, error: itemsError } = await supabase
       .from('shanduoduo_items')
       .select('*')
@@ -151,31 +162,55 @@ export async function getItemData() {
 // 添加参与者
 export async function addParticipant(itemId, participantData) {
   try {
-    const { type, units, openid, claim_time, flavor } = participantData;
+    const { type, openid, claim_time, flavor } = participantData;
 
-    // First get user_id from wx_users table
-    const { data: userData, error: userError } = await supabase
-      .from('wx_users')
-      .select('id')
-      .eq('openid', openid)
+    // Get current item and its participants
+    const { data: item, error: itemError } = await supabase
+      .from('shanduoduo_items')
+      .select(`
+        *,
+        shanduoduo_participants (
+          id,
+          type,
+          flavor
+        )
+      `)
+      .eq('id', itemId)
       .single();
 
-    if (userError) throw userError;
+    if (itemError) throw itemError;
 
-    // Add participant with user_id and openid
+    // Calculate total claimed including new participant
+    const totalClaimed = calculateTotalClaimed([
+      ...item.shanduoduo_participants,
+      { flavor: flavor || [] }
+    ]);
+
+    // Check if enough units are available
+    if (item.quantity < totalClaimed) {
+      throw new Error('可用份数不足');
+    }
+
+    // Add participant
     const { error: participantError } = await supabase
       .from('shanduoduo_participants')
       .insert([{
         item_id: itemId,
-        user_id: userData.id,
-        openid: openid,
+        openid,
         type,
-        units,
-        flavor: flavor || [],
+                flavor: flavor || [],
         claim_time: claim_time || null
       }]);
 
     if (participantError) throw participantError;
+
+    // Update item's reserved count
+    const { error: updateError } = await supabase
+      .from('shanduoduo_items')
+      .update({ reserved: totalClaimed })
+      .eq('id', itemId);
+
+    if (updateError) throw updateError;
 
     return { success: true };
   } catch (error) {
