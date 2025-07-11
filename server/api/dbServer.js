@@ -11,6 +11,17 @@ router.use((req, res, next) => {
   next();
 });
 
+// Helper function to calculate total claimed units from flavors
+function calculateUnitsFromFlavor(flavor) {
+if (!Array.isArray(flavor)) return 0;
+  return flavor.reduce((sum, f) => sum + (f.claimed || 0), 0);
+}
+
+// Calculate total claimed units from participants' units
+function calculateTotalClaimed(participants) {
+  return participants.reduce((sum, p) => sum + (p.units || 0), 0);
+}
+
 // 创建新商品
 export async function createItem(itemData) {
   try {
@@ -35,28 +46,35 @@ export async function createItem(itemData) {
 
     if (itemError) throw itemError;
 
-    // 如果有初始参与者（owner），创建参与者记录
+    // Calculate units from flavor claims for each participant
     if (itemData.participants && itemData.participants.length > 0) {
+      const participantsWithUnits = itemData.participants.map(p => {
+        const units = calculateUnitsFromFlavor(p.flavor);
+        return {
+          item_id: item.id,
+          openid: p.openid,
+          type: p.type,
+          units: units,
+          claim_time: p.claim_time || null,
+          flavor: p.flavor
+        };
+      });
+
       const { error: participantError } = await supabase
         .from('shanduoduo_participants')
-        .insert(
-          itemData.participants.map(p => ({
-            item_id: item.id,  // 使用自动生成的 id
-            openid: p.openid,
-            type: p.type,
-            units: 0,
-            claim_time: p.claim_time || null,
-            flavor: p.flavor.map(flavor => ({
-              name: flavor.name,
-              claimed: flavor.claimed  // Send all flavors without filtering
-            }))
-          }))
-        );
+        .insert(participantsWithUnits);
 
       if (participantError) throw participantError;
-    }
 
-    
+      // Calculate and update total reserved
+      const totalReserved = calculateTotalClaimed(participantsWithUnits);
+      const { error: updateError } = await supabase
+        .from('shanduoduo_items')
+        .update({ reserved: totalReserved })
+        .eq('id', item.id);
+
+      if (updateError) throw updateError;
+    }
 
     return { success: true, data: item };
   } catch (error) {
@@ -85,7 +103,10 @@ export async function getItemDetails(itemId) {
 
     if (participantError) throw participantError;
 
-    // 组合数据
+    // 计算实际的 reserved 值
+    item.reserved = calculateTotalClaimed(participants);
+
+    // 组合数据，使用计算得到的 reserved 值
     return {
       success: true,
       data: {
@@ -114,15 +135,6 @@ export async function getItemById(id) {
     console.error('获取商品详情失败:', error);
     return { success: false, error };
   }
-}
-
-// Add a helper function to calculate total claimed units
-function calculateTotalClaimed(participants) {
-  return participants.reduce((sum, p) => {
-    const participantClaimed = p.flavor?.reduce((flavorSum, f) => 
-      flavorSum + (f.claimed || 0), 0) || 0;
-    return sum + participantClaimed;
-  }, 0);
 }
 
 // 获取所有商品列表
@@ -163,56 +175,76 @@ export async function getItemData() {
 export async function addParticipant(itemId, participantData) {
   try {
     const { type, openid, claim_time, flavor } = participantData;
+    const units = calculateUnitsFromFlavor(flavor);
 
-    // Get current item and its participants
+    // Get current item and all its participants
     const { data: item, error: itemError } = await supabase
       .from('shanduoduo_items')
       .select(`
         *,
-        shanduoduo_participants (
-          id,
-          type,
-          flavor
-        )
+        shanduoduo_participants (*)
       `)
       .eq('id', itemId)
       .single();
 
     if (itemError) throw itemError;
 
-    // Calculate total claimed including new participant
-    const totalClaimed = calculateTotalClaimed([
-      ...item.shanduoduo_participants,
-      { flavor: flavor || [] }
-    ]);
+    // Calculate total reserved from all participants
+    const currentReserved = calculateTotalClaimed(item.shanduoduo_participants || []);
+    const newTotalReserved = currentReserved + units;
+
+    console.log('Reserved calculation:', {
+      currentParticipants: item.shanduoduo_participants,
+      currentReserved,
+      newUnits: units,
+      newTotalReserved
+    });
 
     // Check if enough units are available
-    if (item.quantity < totalClaimed) {
+    if (item.quantity < newTotalReserved) {
       throw new Error('可用份数不足');
     }
 
-    // Add participant
-    const { error: participantError } = await supabase
+    // Add participant with calculated units
+    const { data: newParticipant, error: participantError } = await supabase
       .from('shanduoduo_participants')
       .insert([{
         item_id: itemId,
         openid,
         type,
-                flavor: flavor || [],
+        units,
+        flavor: flavor || [],
         claim_time: claim_time || null
-      }]);
+      }])
+      .select()
+      .single();
 
     if (participantError) throw participantError;
 
-    // Update item's reserved count
+    // Update item's reserved count based on actual participant units
     const { error: updateError } = await supabase
       .from('shanduoduo_items')
-      .update({ reserved: totalClaimed })
+      .update({ reserved: newTotalReserved })
       .eq('id', itemId);
 
     if (updateError) throw updateError;
 
-    return { success: true };
+    // Fetch the final state
+    const { data: updatedItem, error: fetchError } = await supabase
+      .from('shanduoduo_items')
+      .select('*')
+      .eq('id', itemId)
+      .single();
+
+    if (fetchError) throw fetchError;
+
+    return { 
+      success: true,
+      data: {
+        participant: newParticipant,
+        item: updatedItem
+      }
+    };
   } catch (error) {
     console.error('添加参与者失败:', error);
     return { success: false, error };
@@ -234,7 +266,7 @@ export async function removeParticipant(itemId, participantId) {
     // 获取当前商品信息
     const { data: item, error: itemError } = await supabase
       .from('shanduoduo_items')
-      .select('available_units')
+      .select('reserved')  // Changed from available_units
       .eq('id', itemId)
       .single();
 
@@ -248,10 +280,10 @@ export async function removeParticipant(itemId, participantId) {
 
     if (deleteError) throw deleteError;
 
-    // 更新商品可用份数
+    // 更新商品保留份数
     const { error: updateError } = await supabase
       .from('shanduoduo_items')
-      .update({ available_units: item.available_units + participant.units })
+      .update({ reserved: item.reserved - participant.units })  // Changed field name and calculation
       .eq('id', itemId);
 
     if (updateError) throw updateError;
@@ -266,26 +298,26 @@ export async function removeParticipant(itemId, participantId) {
 // 通过 openid 删除参与者
 export async function removeParticipantByOpenid(itemId, openid) {
   try {
-    // 获取参与者信息
+    // Get participant info with flavor
     const { data: participant, error: participantError } = await supabase
       .from('shanduoduo_participants')
-      .select('units')
-      .eq('item_id', itemId)  // 现在使用数字类型的 item_id
+      .select('units, flavor')
+      .eq('item_id', itemId)
       .eq('openid', openid)
       .single();
 
     if (participantError) throw participantError;
 
-    // 获取当前商品信息
+    // Get current item info
     const { data: item, error: itemError } = await supabase
       .from('shanduoduo_items')
-      .select('available_units')
-      .eq('id', itemId)  // 使用数字类型的 id
+      .select('reserved')
+      .eq('id', itemId)
       .single();
 
     if (itemError) throw itemError;
 
-    // 删除参与者
+    // Delete participant
     const { error: deleteError } = await supabase
       .from('shanduoduo_participants')
       .delete()
@@ -294,10 +326,10 @@ export async function removeParticipantByOpenid(itemId, openid) {
 
     if (deleteError) throw deleteError;
 
-    // 更新商品可用份数
+    // Update reserved count
     const { error: updateError } = await supabase
       .from('shanduoduo_items')
-      .update({ available_units: item.available_units + participant.units })
+      .update({ reserved: item.reserved - participant.units })
       .eq('id', itemId);
 
     if (updateError) throw updateError;

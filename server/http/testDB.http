@@ -17,7 +17,7 @@ Content-Type: application/json
   "title": "测试商品",
   "image": "test.jpg",
   "price": 99.99,
-  "quantity": 12,
+  "quantity": 10,
   "unit": "盒",
   "location": "测试位置",
   "expire_at": 1698588000,
@@ -30,11 +30,29 @@ Content-Type: application/json
 }
 
 ### 获取商品详情 (Local)
-GET {{baseUrl}}/api/db/items/1
+GET {{baseUrl}}/api/db/items/8
 Accept: application/json
 
+
 ### Add participant with openid
-POST {{baseUrl}}/api/db/items/1/participants
+POST {{baseUrl}}/api/db/items/9/participants
+Content-Type: application/json
+
+{
+  "type": "owner",
+  "openid": "test_openid_123",
+  "flavor": [
+    {
+      "name": "芝士",
+      "claimed": 2
+    }
+  ],
+  "claim_time": 1698500000
+}
+
+
+### Add participant with openid
+POST {{baseUrl}}/api/db/items/4/participants
 Content-Type: application/json
 
 {
