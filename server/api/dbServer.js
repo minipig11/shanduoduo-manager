@@ -155,11 +155,15 @@ export async function getItemData() {
 
     if (participantsError) throw participantsError;
 
-    // 组合商品和参与者数据
-    const combinedData = items.map(item => ({
-      ...item,
-      participants: participants.filter(p => p.item_id === item.id)
-    }));
+    // 组合商品和参与者数据，并计算实际的 reserved 值
+    const combinedData = items.map(item => {
+      const itemParticipants = participants.filter(p => p.item_id === item.id);
+      item.reserved = calculateTotalClaimed(itemParticipants)
+      return {
+        ...item,
+        participants: itemParticipants
+      };
+    });
 
     return {
       success: true,
