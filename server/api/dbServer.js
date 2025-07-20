@@ -346,7 +346,7 @@ export async function removeParticipantByOpenid(itemId, openid) {
 }
 
 // Create or update WeChat user
-export async function upsertWxUser(openid) {
+export async function upsertWxUser(openid, userInfo) {
   try {
     // 查询用户是否存在
     const { data: existingUser, error: queryError } = await supabase
@@ -360,35 +360,46 @@ export async function upsertWxUser(openid) {
     }
 
     if (existingUser) {
-      // 用户已存在，返回现有用户信息
+      // 用户已存在，更新现有用户信息
+      if (!userInfo || !userInfo.user_name || !userInfo.avatar_url) {
+        return { success: false, error: '缺少用户信息' };
+      }
+      const { data: updateUser, error: updateError } = await supabase
+      .from('wx_users')
+      .update({ user_name: userInfo.user_name, avatar_url: userInfo.avatar_url }) 
+      .eq('openid', openid)
+
+      if (updateError) throw updateError;
+
       return {
         success: true,
         isNewUser: false,
-        user: existingUser
+        user: updateUser
+      };
+
+    } else {
+      // 用户不存在，创建新用户
+      const { data: newUser, error: insertError } = await supabase
+        .from('wx_users')
+        .insert([
+          {
+            openid,
+            user_name: null,
+            avatar_url: null,
+            created_at: new Date().toISOString()
+          }
+        ])
+        .select()
+        .single();
+
+      if (insertError) throw insertError;
+
+      return {
+        success: true,
+        isNewUser: true,
+        user: newUser
       };
     }
-
-    // 用户不存在，创建新用户
-    const { data: newUser, error: insertError } = await supabase
-      .from('wx_users')
-      .insert([
-        {
-          openid,
-          user_name: null,
-          avatar_url: null,
-          created_at: new Date().toISOString()
-        }
-      ])
-      .select()
-      .single();
-
-    if (insertError) throw insertError;
-
-    return {
-      success: true,
-      isNewUser: true,
-      user: newUser
-    };
 
   } catch (error) {
     console.error('微信用户操作失败:', error);
@@ -437,7 +448,7 @@ router.get('/items/:id', async (req, res) => {
 });
 
 // 添加参与者路由
-router.post('/items/:id/participants', async (req, res) => {
+router.post('/items/:id/newParticipant', async (req, res) => {
   try {
     const result = await addParticipant(req.params.id, req.body);
     if (!result.success) {
@@ -478,13 +489,13 @@ router.delete('/items/:itemId/participants/openid/:openid', async (req, res) => 
 // 添加微信用户路由
 router.post('/wx_users', async (req, res) => {
   try {
-    const { openid } = req.body;
+    const { openid, userInfo } = req.body;
 
     if (!openid) {
       return res.status(400).json({ error: 'Missing openid parameter' });
     }
 
-    const result = await upsertWxUser(openid);
+    const result = await upsertWxUser(openid, userInfo);
     
     if (!result.success) {
       return res.status(500).json({ error: result.error });
