@@ -32,7 +32,7 @@ CREATE TABLE shanduoduo_participants (
   openid VARCHAR(64) NOT NULL,     -- 用户openid
   type VARCHAR(20) NOT NULL,       -- 参与者类型：owner/claimed
   flavor JSONB DEFAULT '[]'::jsonb, -- 口味
-  units INTEGER NOT NULL,          -- 保留
+  units INTEGER NOT NULL,          -- 参与者一共占用多少份
   claim_time BIGINT,              -- 认领时间戳
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc', now())
 );

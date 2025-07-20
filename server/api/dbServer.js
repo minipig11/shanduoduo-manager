@@ -104,7 +104,7 @@ export async function getItemDetails(itemId) {
     if (participantError) throw participantError;
 
     // 计算实际的 reserved 值
-    item.reserved = calculateTotalClaimed(participants);
+    item.reserved = item.quantity - calculateTotalClaimed(participants);
 
     // 组合数据，使用计算得到的 reserved 值
     return {
@@ -130,6 +130,8 @@ export async function getItemById(id) {
       .single();
 
     if (itemError) throw itemError;
+    
+    item.reserved = item.quantity - calculateTotalClaimed(item.shanduoduo_participants || []);
     return { success: true, data: item };
   } catch (error) {
     console.error('获取商品详情失败:', error);
@@ -158,7 +160,7 @@ export async function getItemData() {
     // 组合商品和参与者数据，并计算实际的 reserved 值
     const combinedData = items.map(item => {
       const itemParticipants = participants.filter(p => p.item_id === item.id);
-      item.reserved = calculateTotalClaimed(itemParticipants)
+      item.reserved = item.quantity - calculateTotalClaimed(itemParticipants)
       return {
         ...item,
         participants: itemParticipants
@@ -373,7 +375,9 @@ export async function upsertWxUser(openid, userInfo) {
         .select();
 
         if (updateError) throw updateError;
-        
+        if (!updateData || updateData.length === 0) {
+          console.warn('未找到需要更新的 wx_users 记录:', openid);
+        }
         return {
           success: true,
           isNewUser: false,
