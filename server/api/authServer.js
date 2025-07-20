@@ -67,4 +67,32 @@ router.post('/login', async (req, res) => {
   }
 });
 
+
+// 添加微信用户路由
+router.post('/wx_users', async (req, res) => {
+  try {
+    const { openid, userInfo } = req.body;
+
+    if (!openid) {
+      return res.status(400).json({ error: 'Missing openid parameter' });
+    }
+
+    const result = await upsertWxUser(openid, userInfo);
+    
+    if (!result.success) {
+      return res.status(500).json({ error: result.error });
+    }
+
+    res.json({
+      success: true,
+      isNewUser: result.isNewUser,
+      user: result.user
+    });
+
+  } catch (error) {
+    console.error('处理微信用户请求失败:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 export default router;
