@@ -19,6 +19,10 @@ create policy "Anyone can view todos" on shanduoduo_items for
     select using (true);
 create policy "Anyone can add new todos" on shanduoduo_items for
     insert with check (true);
+CREATE POLICY "Allow update for all users"
+ON shanduoduo_items
+FOR UPDATE
+USING (true);
 
 -- 参与者表
 CREATE TABLE shanduoduo_participants (
@@ -61,6 +65,11 @@ create policy "Anyone can view todos" on wx_users for
     select using (true);
 create policy "Anyone can add new todos" on wx_users for
     insert with check (true);
+    -- 在 Supabase SQL Editor 执行
+CREATE POLICY "Allow update for all users"
+ON wx_users
+FOR UPDATE
+USING (true);
 
   -- 1. 创建一个函数，用于更新 updated_at 字段
   CREATE OR REPLACE FUNCTION update_updated_at_column()

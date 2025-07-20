@@ -347,8 +347,9 @@ export async function removeParticipantByOpenid(itemId, openid) {
 
 // Create or update WeChat user
 export async function upsertWxUser(openid, userInfo) {
-  console.log('userInfo:', userInfo);
-
+  
+  console.debug('openid:', openid);
+  console.debug('userInfo:', userInfo);
   try {
     // 查询用户是否存在
     const { data: existingUser, error: queryError } = await supabase
@@ -363,23 +364,29 @@ export async function upsertWxUser(openid, userInfo) {
 
     if (existingUser) {
 
-      // 用户已存在，更新现有用户信息
+      // 如果提供 userInfo，更新现有用户信息
       if (userInfo && userInfo.nickName && userInfo.avatarUrl) {
         const { data: updateUser, error: updateError } = await supabase
         .from('wx_users')
         .update({ user_name: userInfo.nickName, avatar_url: userInfo.avatarUrl }) 
         .eq('openid', openid)
+        .select();
 
         if (updateError) throw updateError;
-        existingUser.user_name = userInfo.nickName;
-        existingUser.avatar_url = userInfo.avatarUrl;
+        
+        return {
+          success: true,
+          isNewUser: false,
+          user: updateUser
+        };
+      } else {
+        // 如果没有提供 userInfo，直接返回现有用户信息
+        return {
+          success: true,
+          isNewUser: false,
+          user: existingUser
+        };
       }
-
-      return {
-        success: true,
-        isNewUser: false,
-        user: existingUser
-      };
 
     } else {
       // 用户不存在，创建新用户
