@@ -117,7 +117,7 @@ export async function upsertWxUser(openid, userInfo) {
         .select();
 
         if (updateError) throw updateError;
-        if (!updateData || updateData.length === 0) {
+        if (!updateUser || updateUser.length === 0) {
           console.warn('未找到需要更新的 wx_users 记录:', openid);
         }
         return {
