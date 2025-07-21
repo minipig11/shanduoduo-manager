@@ -1,5 +1,5 @@
 ### Test Create New WeChat User
-POST http://localhost:3000/api/db/wx_users
+POST http://localhost:3000/api/auth/wx_users
 Content-Type: application/json
 
 {
@@ -7,7 +7,7 @@ Content-Type: application/json
 }
 
 ### Test Existing WeChat User
-POST http://localhost:3000/api/db/wx_users
+POST http://localhost:3000/api/auth/wx_users
 Content-Type: application/json
 
 {
@@ -15,7 +15,7 @@ Content-Type: application/json
 }
 
 ### Test Missing OpenID
-POST http://localhost:3000/api/db/wx_users
+POST http://localhost:3000/api/auth/wx_users
 Content-Type: application/json
 
 {}

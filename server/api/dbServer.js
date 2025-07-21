@@ -1,5 +1,5 @@
-import supabase from './supabase.js';
 import express from 'express';
+import supabase from './supabase.js';
 
 const router = express.Router();
 
@@ -67,7 +67,10 @@ export async function createItem(itemData) {
       if (participantError) throw participantError;
 
       // Calculate and update total reserved
-      const totalReserved = calculateTotalClaimed(participantsWithUnits);
+      const totalReserved = item.quantity - calculateTotalClaimed(participantsWithUnits);
+      if ( totalReserved  < 0) {  
+        throw new Error('可用份数不足');
+      }
       const { error: updateError } = await supabase
         .from('shanduoduo_items')
         .update({ reserved: totalReserved })
@@ -104,7 +107,11 @@ export async function getItemDetails(itemId) {
     if (participantError) throw participantError;
 
     // 计算实际的 reserved 值
-    item.reserved = item.quantity - calculateTotalClaimed(participants);
+    const totalReserved = item.quantity - calculateTotalClaimed(participants || []);
+    if ( item.reserved !== totalReserved ) {  
+      console.warn(`商品 ${itemId} 的 reserved 值不一致，计算值: ${totalReserved}, 数据库值: ${item.reserved}`);
+      item.reserved = totalReserved;  // 更新 item 的 reserved 值
+    }
 
     // 组合数据，使用计算得到的 reserved 值
     return {
@@ -131,8 +138,14 @@ export async function getItemById(id) {
 
     if (itemError) throw itemError;
     
-    item.reserved = item.quantity - calculateTotalClaimed(item.shanduoduo_participants || []);
+    // 计算实际的 reserved 值
+    const totalReserved = item.quantity - calculateTotalClaimed(item.shanduoduo_participants || []);
+    if ( item.reserved !== totalReserved ) {  
+      console.warn(`商品 ${id} 的 reserved 值不一致，计算值: ${totalReserved}, 数据库值: ${item.reserved}`);
+      item.reserved = totalReserved;  // 更新 item 的 reserved 值
+    }
     return { success: true, data: item };
+
   } catch (error) {
     console.error('获取商品详情失败:', error);
     return { success: false, error };
@@ -160,7 +173,12 @@ export async function getItemData() {
     // 组合商品和参与者数据，并计算实际的 reserved 值
     const combinedData = items.map(item => {
       const itemParticipants = participants.filter(p => p.item_id === item.id);
-      item.reserved = item.quantity - calculateTotalClaimed(itemParticipants)
+      // 计算实际的 reserved 值
+      const totalReserved = item.quantity - calculateTotalClaimed(itemParticipants || []);
+      if ( item.reserved !== totalReserved ) {  
+        console.warn(`商品 ${id} 的 reserved 值不一致，计算值: ${totalReserved}, 数据库值: ${item.reserved}`);
+        item.reserved = totalReserved;  // 更新 item 的 reserved 值
+      }
       return {
         ...item,
         participants: itemParticipants
@@ -196,8 +214,8 @@ export async function addParticipant(itemId, participantData) {
     if (itemError) throw itemError;
 
     // Calculate total reserved from all participants
-    const currentReserved = calculateTotalClaimed(item.shanduoduo_participants || []);
-    const newTotalReserved = currentReserved + units;
+    const currentReserved = item.quantity - calculateTotalClaimed(item.shanduoduo_participants || []);
+    const newTotalReserved = currentReserved - units;
 
     console.log('Reserved calculation:', {
       currentParticipants: item.shanduoduo_participants,
@@ -207,7 +225,7 @@ export async function addParticipant(itemId, participantData) {
     });
 
     // Check if enough units are available
-    if (item.quantity < newTotalReserved) {
+    if (newTotalReserved < 0) {
       throw new Error('可用份数不足');
     }
 
@@ -289,7 +307,7 @@ export async function removeParticipant(itemId, participantId) {
     // 更新商品保留份数
     const { error: updateError } = await supabase
       .from('shanduoduo_items')
-      .update({ reserved: item.reserved - participant.units })  // Changed field name and calculation
+      .update({ reserved: item.reserved + participant.units })  // Changed field name and calculation
       .eq('id', itemId);
 
     if (updateError) throw updateError;
@@ -335,7 +353,7 @@ export async function removeParticipantByOpenid(itemId, openid) {
     // Update reserved count
     const { error: updateError } = await supabase
       .from('shanduoduo_items')
-      .update({ reserved: item.reserved - participant.units })
+      .update({ reserved: item.reserved + participant.units })
       .eq('id', itemId);
 
     if (updateError) throw updateError;
@@ -343,81 +361,6 @@ export async function removeParticipantByOpenid(itemId, openid) {
     return { success: true };
   } catch (error) {
     console.error('删除参与者失败:', error);
-    return { success: false, error };
-  }
-}
-
-// Create or update WeChat user
-export async function upsertWxUser(openid, userInfo) {
-  
-  console.debug('openid:', openid);
-  console.debug('userInfo:', userInfo);
-  try {
-    // 查询用户是否存在
-    const { data: existingUser, error: queryError } = await supabase
-      .from('wx_users')
-      .select('*')
-      .eq('openid', openid)
-      .single();
-
-    if (queryError && queryError.code !== 'PGRST116') { // PGRST116 is "not found" error
-      throw queryError;
-    }
-
-    if (existingUser) {
-
-      // 如果提供 userInfo，更新现有用户信息
-      if (userInfo && userInfo.nickName && userInfo.avatarUrl) {
-        const { data: updateUser, error: updateError } = await supabase
-        .from('wx_users')
-        .update({ user_name: userInfo.nickName, avatar_url: userInfo.avatarUrl }) 
-        .eq('openid', openid)
-        .select();
-
-        if (updateError) throw updateError;
-        if (!updateData || updateData.length === 0) {
-          console.warn('未找到需要更新的 wx_users 记录:', openid);
-        }
-        return {
-          success: true,
-          isNewUser: false,
-          user: updateUser
-        };
-      } else {
-        // 如果没有提供 userInfo，直接返回现有用户信息
-        return {
-          success: true,
-          isNewUser: false,
-          user: existingUser
-        };
-      }
-
-    } else {
-      // 用户不存在，创建新用户
-      const { data: newUser, error: insertError } = await supabase
-        .from('wx_users')
-        .insert([
-          {
-            openid,
-            user_name: null,
-            avatar_url: null,
-            created_at: new Date().toISOString()
-          }
-        ])
-        .select()
-        .single();
-
-      if (insertError) throw insertError;
-
-      return {
-        success: true,
-        isNewUser: true,
-        user: newUser
-      };
-    }
-
-  } catch (error) {
-    console.error('微信用户操作失败:', error);
     return { success: false, error };
   }
 }
@@ -497,33 +440,6 @@ router.delete('/items/:itemId/participants/openid/:openid', async (req, res) => 
     }
     res.json({ success: true });
   } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// 添加微信用户路由
-router.post('/wx_users', async (req, res) => {
-  try {
-    const { openid, userInfo } = req.body;
-
-    if (!openid) {
-      return res.status(400).json({ error: 'Missing openid parameter' });
-    }
-
-    const result = await upsertWxUser(openid, userInfo);
-    
-    if (!result.success) {
-      return res.status(500).json({ error: result.error });
-    }
-
-    res.json({
-      success: true,
-      isNewUser: result.isNewUser,
-      user: result.user
-    });
-
-  } catch (error) {
-    console.error('处理微信用户请求失败:', error);
     res.status(500).json({ error: error.message });
   }
 });
