@@ -176,7 +176,7 @@ export async function getItemData() {
       // 计算实际的 reserved 值
       const totalReserved = item.quantity - calculateTotalClaimed(itemParticipants || []);
       if ( item.reserved !== totalReserved ) {  
-        console.warn(`商品 ${id} 的 reserved 值不一致，计算值: ${totalReserved}, 数据库值: ${item.reserved}`);
+        console.warn(`商品 ${item.id} 的 reserved 值不一致，计算值: ${totalReserved}, 数据库值: ${item.reserved}`);
         item.reserved = totalReserved;  // 更新 item 的 reserved 值
       }
       return {
