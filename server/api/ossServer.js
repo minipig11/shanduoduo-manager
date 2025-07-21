@@ -4,15 +4,16 @@ import multer from 'multer';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
 // Add debug logging before dotenv.config()
-console.log('Before dotenv.config():', {
-  NODE_ENV: process.env.NODE_ENV,
-  OSS_ACCESS_KEY_ID: process.env.OSS_ACCESS_KEY_ID ? 'set' : 'not set',
-  OSS_ACCESS_KEY_SECRET: process.env.OSS_ACCESS_KEY_SECRET ? 'set' : 'not set',
-  VITE_SUPABASE_URL: process.env.VITE_SUPABASE_URL ? 'set' : 'not set',
-  VITE_SUPABASE_ANON_KEY: process.env.VITE_SUPABASE_ANON_KEY ? 'set' : 'not set',
-});
+// console.log('Before dotenv.config():', {
+//   NODE_ENV: process.env.NODE_ENV,
+//   OSS_ACCESS_KEY_ID: process.env.OSS_ACCESS_KEY_ID ? 'set' : 'not set',
+//   OSS_ACCESS_KEY_SECRET: process.env.OSS_ACCESS_KEY_SECRET ? 'set' : 'not set',
+//   VITE_SUPABASE_URL: process.env.VITE_SUPABASE_URL ? 'set' : 'not set',
+//   VITE_SUPABASE_ANON_KEY: process.env.VITE_SUPABASE_ANON_KEY ? 'set' : 'not set',
+// });
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -24,12 +25,12 @@ if (process.env.NODE_ENV !== 'production') {
   });
 }
 
-console.log('Environment:', {
-  NODE_ENV: process.env.NODE_ENV,
-  OSS_REGION: process.env.OSS_REGION ? 'set' : 'not set',
-  OSS_ACCESS_KEY_ID: process.env.OSS_ACCESS_KEY_ID ? 'set' : 'not set',
-  OSS_ACCESS_KEY_SECRET: process.env.OSS_ACCESS_KEY_SECRET ? 'set' : 'not set',
-});
+// console.log('Environment:', {
+//   NODE_ENV: process.env.NODE_ENV,
+//   OSS_REGION: process.env.OSS_REGION ? 'set' : 'not set',
+//   OSS_ACCESS_KEY_ID: process.env.OSS_ACCESS_KEY_ID ? 'set' : 'not set',
+//   OSS_ACCESS_KEY_SECRET: process.env.OSS_ACCESS_KEY_SECRET ? 'set' : 'not set',
+// });
 
 const BUCKET_LIULANTUPIAN = 'liulantupian';
 const BUCKET_SHANDUODUO = 'shanduoduo';
