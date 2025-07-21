@@ -166,7 +166,7 @@ export async function getItemData() {
     // 获取所有参与者信息
     const { data: participants, error: participantsError } = await supabase
       .from('shanduoduo_participants')
-      .select('*');
+      .select('*, wx_users:shanduoduo_participants_openid_fkey(user_name, avatar_url)')
 
     if (participantsError) throw participantsError;
 
