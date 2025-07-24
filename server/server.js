@@ -1,5 +1,6 @@
 // server.js
 import app from './api/index.js';
+import { inject } from '@vercel/analytics';
 // import dotenv from 'dotenv';
 // import path from 'path';
 
@@ -15,5 +16,7 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
+
+inject();
 
 export default app;

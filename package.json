@@ -14,6 +14,8 @@
     "vercel-env-pull": "vercel env pull",
     "vercel-list": "vercel list",
     "vercel-logs:debug": "vercel logs shanduoduo-manager.vercel.app --debug"
+  },
+  "dependencies": {
+    "@vercel/analytics": "^1.5.0"
   }
 }
-
