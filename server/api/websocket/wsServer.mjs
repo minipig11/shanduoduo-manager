@@ -3,7 +3,6 @@ import http from 'http';
 
 class WebSocketServer {
   constructor(server) {
-    console.debug('[WSS] Initializing WebSocket server...');
     this.wss = new WebSocket.Server({ 
       server,
       path: '/ws',  // 显式指定 WebSocket 路径

@@ -5,11 +5,11 @@ import supabase from './supabase.js';
 const router = express.Router();
 
 // WeChat Mini Program Configuration
-console.log('Environment:', {
-  NODE_ENV: process.env.NODE_ENV,
-  WECHAT_APP_ID: process.env.WECHAT_APP_ID ? 'set' : 'not set',
-  WECHAT_APP_SECRET: process.env.WECHAT_APP_SECRET ? 'set' : 'not set',
-});
+// console.log('Environment:', {
+//   NODE_ENV: process.env.NODE_ENV,
+//   WECHAT_APP_ID: process.env.WECHAT_APP_ID ? 'set' : 'not set',
+//   WECHAT_APP_SECRET: process.env.WECHAT_APP_SECRET ? 'set' : 'not set',
+// });
 
 const WECHAT_APP_ID = process.env.WECHAT_APP_ID;
 const WECHAT_APP_SECRET = process.env.WECHAT_APP_SECRET;

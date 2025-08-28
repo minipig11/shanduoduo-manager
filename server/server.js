@@ -1,10 +1,10 @@
 // server.js
-import app from './api/index.js';
+import { app, server } from './api/index.js';
 
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+server.listen(PORT, () => {
+  console.log(`[HTTP] Server running on http://localhost:${PORT}`);
 });
 
-export default app;
+export default server;
