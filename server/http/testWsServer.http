@@ -1,5 +1,8 @@
+@baseUrl = https://dev-shanduoduo.sicilyhuang.top
+#@baseUrl = http://localhost:3000
+
 ### Test Update ScrollView - Show
-POST http://localhost:3000/api/updateScrollView
+POST {{baseUrl}}/api/ws/update
 Content-Type: application/json
 
 {
@@ -7,7 +10,7 @@ Content-Type: application/json
 }
 
 ### Test Update ScrollView - Hide
-POST http://localhost:3000/api/updateScrollView
+POST {{baseUrl}}/api/ws/update
 Content-Type: application/json
 
 {
@@ -15,13 +18,13 @@ Content-Type: application/json
 }
 
 ### Test Update ScrollView - Missing showFlag
-POST http://localhost:3000/api/updateScrollView
+POST {{baseUrl}}/api/ws/update
 Content-Type: application/json
 
 {}
 
 ### Test Update ScrollView - Invalid showFlag Type
-POST http://localhost:3000/api/updateScrollView
+POST {{baseUrl}}/api/ws/update
 Content-Type: application/json
 
 {

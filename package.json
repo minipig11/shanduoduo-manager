@@ -2,6 +2,7 @@
   "name": "shanduoduo-manager",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "install:all": "npm install && cd client && npm install && cd ../server && npm install",
     "dev:client": "cd client && npm run dev",

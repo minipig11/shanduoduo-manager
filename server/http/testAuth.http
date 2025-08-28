@@ -1,5 +1,8 @@
 ### Test WeChat Login - Valid Code
-POST http://localhost:3000/api/auth/login
+#@baseUrl = http://localhost:3000
+@baseUrl = https://shanduoduo.sicilyhuang.top/
+
+POST {{baseUrl}}/api/auth/login
 Content-Type: application/json
 
 {
@@ -19,3 +22,10 @@ Content-Type: application/json
 {
   "code": "invalid_code"
 }
+
+
+### Test WeChat Login - Invalid Code
+POST http://localhost:3000/api/auth/wx_users
+Content-Type: application/json
+
+{"openid":"oIQwB5svnyDUu9tUwqvt_drV7U1o","userInfo":{"avatarUrl":"wxfile://tmp_d213d738fe0d661f851124f79ef944d8e068ac09e686e6ba.jpg","nickName":"Karen","city":"","country":"","gender":0,"language":"en","province":""}}

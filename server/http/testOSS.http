@@ -1,5 +1,4 @@
-# @baseUrl = http://localhost:3000
-@baseUrl = https://shanduoduo.sicilyhuang.top/
+@baseUrl = https://dev-shanduoduo.sicilyhuang.top/
 
 # @bucket = liulantupian
 @bucket = shanduoduo

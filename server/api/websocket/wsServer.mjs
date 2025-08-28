@@ -3,36 +3,86 @@ import http from 'http';
 
 class WebSocketServer {
   constructor(server) {
-    this.wss = new WebSocket.Server({ server });
-    this.clients = new Set();
+    console.debug('[WSS] Initializing WebSocket server...');
+    this.wss = new WebSocket.Server({ 
+      server,
+      path: '/ws',  // 显式指定 WebSocket 路径
+      perMessageDeflate: true,
+      clientTracking: true
+    });
     
+    console.debug('[WSS] WebSocket server initialized with path: /ws');
+    this.clients = new Set();
     this.init();
   }
 
   init() {
-    this.wss.on('connection', (ws) => {
-      console.log('新的WebSocket连接建立');
-      this.clients.add(ws);
+    // 添加连接错误处理
+    this.wss.on('error', (error) => {
+      console.error('[WSS] Server error:', error);
+    });
 
-      // 连接关闭时移除客户端
-      ws.on('close', () => {
-        console.log('WebSocket连接关闭');
-        this.clients.delete(ws);
-      });
+    this.wss.on('connection', (ws, req) => {
+      const clientIp = req.socket.remoteAddress;
+      const timestamp = new Date().toISOString();
+      console.debug(`[WSS] ${timestamp} New connection from ${clientIp}`);
+      
+      this.clients.add(ws);
+      console.debug(`[WSS] Active connections: ${this.clients.size}`);
 
       // 发送初始状态
-      this.sendToClient(ws, {
-        type: 'updateScrollView',
-        showFlag: true
+      const initialState = { 
+        type: 'updateScrollView', 
+        showFlag: false 
+      };
+      console.debug('[WSS] Sending initial state:', initialState);
+      this.sendToClient(ws, initialState);
+
+      // 添加错误处理
+      ws.on('error', (error) => {
+        console.error(`[WSS] Client ${clientIp} error:`, error);
+      });
+
+      ws.on('close', (code, reason) => {
+        console.debug(`[WSS] Client ${clientIp} disconnected: ${code} - ${reason}`);
+        this.clients.delete(ws);
+        console.debug(`[WSS] Remaining connections: ${this.clients.size}`);
+      });
+
+      ws.on('message', (data) => {
+        console.debug(`[WSS] Received message from ${clientIp}:`, data.toString());
+      });
+
+      // 添加心跳检测
+      ws.isAlive = true;
+      ws.on('pong', () => {
+        ws.isAlive = true;
       });
     });
+
+    // 设置心跳检测间隔
+    this.heartbeatInterval = setInterval(() => {
+      this.wss.clients.forEach((ws) => {
+        if (ws.isAlive === false) {
+          console.log('Terminating inactive connection');
+          return ws.terminate();
+        }
+        ws.isAlive = false;
+        ws.ping();
+      });
+    }, 30000);
   }
 
   // 向所有连接的客户端广播消息
   broadcast(message) {
+    console.debug('[WSS] Broadcasting message:', message);
+    console.debug(`[WSS] Active clients: ${this.clients.size}`);
+    
     this.clients.forEach(client => {
+      console.debug('[WSS] Client state:', client.readyState);
       if (client.readyState === WebSocket.OPEN) {
         client.send(JSON.stringify(message));
+        console.debug('[WSS] Message sent successfully');
       }
     });
   }
@@ -51,6 +101,14 @@ class WebSocketServer {
       showFlag: showFlag
     };
     this.broadcast(message);
+  }
+
+  // 关闭服务器
+  close() {
+    clearInterval(this.heartbeatInterval);
+    this.wss.close(() => {
+      console.log('WebSocket server closed');
+    });
   }
 }
 

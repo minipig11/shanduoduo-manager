@@ -1,6 +1,13 @@
 # Environment files
 .env
 .env.*
+.env.local
+.env.*.local
+.env.development
+.env.production
+.env.test
+
+# Exception for example environment file
 !.env.example
 
 # Logs

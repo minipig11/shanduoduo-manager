@@ -98,3 +98,8 @@ npm install
 # 测试过程
 http://localhost:5173/oss-images
 http://localhost:3000/api/oss/shanduoduo/v0list.js
+
+# WebSocket Secure (WSS) Support Analysis
+Production: wss://shanduoduo.sicilyhuang.top/ws
+Preview: wss://dev-shanduoduo.sicilyhuang.top/ws
+Local Development: ws://localhost:3000/ws

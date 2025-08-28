@@ -4,6 +4,8 @@ import http from 'http';
 import ossRouter from './ossServer.js';
 import dbRouter from './dbServer.js';
 import authRouter from './authServer.js';
+import healthRouter from './healthServer.js';
+import wsRouter from './wsServer.js';
 import WebSocketServer from './websocket/wsServer.mjs';
 
 const app = express();
@@ -24,34 +26,18 @@ app.use((req, res, next) => {
   next();
 });
 
+/*
+Vercel 收到 WebSocket 连接请求 (/ws)
+根据 vercel.json 转发到 index.js 中的 WebSocket 服务器处理连接
+*/
+const server = http.createServer(app);
+const wss = new WebSocketServer(server);
+app.set('wss', wss);
+
 app.use('/api/oss', ossRouter);
 app.use('/api/db', dbRouter);
 app.use('/api/auth', authRouter);
-
-// Add health check endpoint
-app.get('/api/health', (req, res) => {
-  console.log('Health check requested');
-  res.json({ 
-    status: 'ok',
-    timestamp: new Date().toISOString(),
-    env: process.env.NODE_ENV
-  });
-});
-
-// 创建WebSocket服务器实例
-const server = http.createServer(app);
-const wss = new WebSocketServer(server);
-
-// 将wss实例添加到app，以便在路由中使用
-app.set('wss', wss);
-
-// 添加控制WebSocket的路由
-app.post('/api/updateScrollView', (req, res) => {
-  const { showFlag } = req.body;
-  const wss = req.app.get('wss');
-  
-  wss.updateScrollViewStatus(showFlag);
-  res.json({ success: true });
-});
+app.use('/api/ws', wsRouter);
+app.use('/api/health', healthRouter);
 
 export default app;
