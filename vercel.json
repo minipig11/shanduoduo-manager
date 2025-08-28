@@ -12,21 +12,20 @@
     ],
     "routes": [
         {
+            "src": "/ws",
+            "dest": "/server/api/index.js"
+        },
+        {
             "src": "/api/(.*)",
             "dest": "/server/api/index.js"
         },
         {
-            "handle": "filesystem"
+            "src": "/(.*\\.\\w+)",
+            "dest": "/client/dist/$1"
         },
         {
             "src": "/(.*)",
-            "dest": "/client/dist/$1"
+            "dest": "/client/dist/index.html"
         }
-    ],
-    "env": {
-        "NODE_ENV": "production"
-    },
-    "git": {
-        "deploymentBranch": "dev"
-    }
+    ]
 }

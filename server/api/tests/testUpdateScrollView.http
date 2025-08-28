@@ -1,0 +1,29 @@
+### Test Update ScrollView - Show
+POST http://localhost:3000/api/updateScrollView
+Content-Type: application/json
+
+{
+    "showFlag": true
+}
+
+### Test Update ScrollView - Hide
+POST http://localhost:3000/api/updateScrollView
+Content-Type: application/json
+
+{
+    "showFlag": false
+}
+
+### Test Update ScrollView - Missing showFlag
+POST http://localhost:3000/api/updateScrollView
+Content-Type: application/json
+
+{}
+
+### Test Update ScrollView - Invalid showFlag Type
+POST http://localhost:3000/api/updateScrollView
+Content-Type: application/json
+
+{
+    "showFlag": "invalid"
+}
