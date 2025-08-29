@@ -13,7 +13,7 @@
     "routes": [
         {
             "src": "/api/ws",
-            "dest": "/server/api/index.js",
+            "dest": "server/api/index.js",
             "headers": {
                 "Upgrade": "websocket",
                 "Connection": "Upgrade"
@@ -21,15 +21,15 @@
         },
         {
             "src": "/api/(.*)",
-            "dest": "/server/api/index.js"
+            "dest": "server/api/index.js"
         },
         {
             "src": "/(.*\\.\\w+)",
-            "dest": "/client/dist/$1"
+            "dest": "client/dist/$1"
         },
         {
             "src": "/(.*)",
-            "dest": "/client/dist/index.html"
+            "dest": "client/dist/index.html"
         }
     ]
 }

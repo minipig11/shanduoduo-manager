@@ -11,28 +11,17 @@ class WebSocketManager {
 
   initialize(server) {
     if (this.wss) {
-      console.debug('[WSS] WebSocket server already initialized');
+      console.debug('[WS] WebSocket server already initialized');
       return this.wss;
     }
 
-    console.debug('[WSS] Initializing WebSocket server...');
+    console.debug('[WS] Initializing WebSocket server...');
     this.server = server;
     
     // 添加 WebSocket 配置
-    this.wss = new WebSocketServer(server, {
-      path: '/ws',
-      handleProtocols: (protocols, req) => {
-        console.debug('[WSS] Client protocols:', protocols);
-        return protocols[0];
-      },
-      verifyClient: (info, done) => {
-        console.debug('[WSS] Verifying client connection from:', info.req.headers.origin);
-        // 允许所有连接
-        done(true);
-      }
-    });
+    this.wss = new WebSocketServer(server);
 
-    console.debug('[WSS] WebSocket server initialized successfully');
+    console.debug('[WS] WebSocket server initialized successfully');
     return this.wss;
   }
 
@@ -44,7 +33,7 @@ class WebSocketManager {
     if (this.wss) {
       this.wss.close();
       this.wss = null;
-      console.debug('[WSS] WebSocket server closed');
+      console.debug('[WS] WebSocket server closed');
     }
   }
 }

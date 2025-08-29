@@ -99,6 +99,13 @@ npm install
 http://localhost:5173/oss-images
 http://localhost:3000/api/oss/shanduoduo/v0list.js
 
+# Test HTTP endpoint first
+curl https://dev-shanduoduo.sicilyhuang.top/api/health
+
+# Then test WebSocket connection
+wscat -c ws://localhost:3000/api/ws
+wscat -c wss://dev-shanduoduo.sicilyhuang.top/api/ws
+
 # WebSocket Secure (WSS) Support Analysis
 Production: wss://shanduoduo.sicilyhuang.top/ws
 Preview: wss://dev-shanduoduo.sicilyhuang.top/ws
