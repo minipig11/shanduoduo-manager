@@ -3,14 +3,23 @@ import http from 'http';
 
 class WebSocketServer {
   constructor(server) {
+    console.debug('[WSS] Setting up WebSocket server...');
     this.wss = new WebSocket.Server({ 
       server,
-      path: '/ws',  // 显式指定 WebSocket 路径
+      path: '/api/ws',  // Changed path to match API routes
       perMessageDeflate: true,
       clientTracking: true
     });
+
+    this.wss.on('headers', (headers, request) => {
+      console.debug('[WSS] Handshake headers:', headers);
+    });
+  
+    this.wss.on('error', (error) => {
+      console.error('[WSS] Server error:', error);
+    });
     
-    console.debug('[WSS] WebSocket server initialized with path: /ws');
+    console.debug('[WSS] WebSocket server initialized with path: /api/ws');
     this.clients = new Set();
     this.init();
   }

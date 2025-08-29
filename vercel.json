@@ -12,8 +12,12 @@
     ],
     "routes": [
         {
-            "src": "/ws",
-            "dest": "/server/api/index.js"
+            "src": "/api/ws",
+            "dest": "/server/api/index.js",
+            "headers": {
+                "Upgrade": "websocket",
+                "Connection": "Upgrade"
+            }
         },
         {
             "src": "/api/(.*)",

@@ -26,4 +26,10 @@ app.use('/api/auth', authRouter);
 app.use('/api/health', healthRouter);
 app.use('/api/ws', wsRouter);
 
+// Export default function for Vercel
+export default function handler(req, res) {
+  return app(req, res);
+}
+
+// Keep the named exports for local development
 export { app, server };

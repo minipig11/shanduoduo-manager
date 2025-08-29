@@ -1,5 +1,5 @@
-#@baseUrl = https://dev-shanduoduo.sicilyhuang.top
-@baseUrl = http://localhost:3000
+@baseUrl = https://dev-shanduoduo.sicilyhuang.top
+#@baseUrl = http://localhost:3000
 
 ### Test Update ScrollView - Show
 POST {{baseUrl}}/api/ws/update
