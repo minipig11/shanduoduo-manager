@@ -1,7 +1,4 @@
-import http from 'http';
 import WebSocketServer from './websocket/wsServer.mjs';
-import express from 'express';
-import cors from 'cors';
 
 class WebSocketManager {
   constructor() {

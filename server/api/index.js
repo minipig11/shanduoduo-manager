@@ -4,7 +4,7 @@ import ossRouter from './ossServer.js';
 import dbRouter from './dbServer.js';
 import authRouter from './authServer.js';
 import healthRouter from './healthServer.js';
-import wsRouter from './wsServer.js';
+import wsRouter from './scrollViewFlag.js';
 
 const { app, server } = createExpressApp();
 
@@ -24,7 +24,7 @@ app.use('/api/oss', ossRouter);
 app.use('/api/db', dbRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/health', healthRouter);
-app.use('/api/ws', wsRouter);
+app.use('/api/scroll-view-flag', wsRouter);
 
 // Export default function for Vercel
 export default function handler(req, res) {

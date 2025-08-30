@@ -1,0 +1,14 @@
+#@baseUrl = https://dev-shanduoduo.sicilyhuang.top
+@baseUrl = http://localhost:3000
+
+### Get ScrollView State
+GET {{baseUrl}}/api/scroll-view-flag/get
+Content-Type: application/json
+
+### Update ScrollView State
+POST {{baseUrl}}/api/scroll-view-flag/update
+Content-Type: application/json
+
+{
+    "showFlag": true
+}

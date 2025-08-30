@@ -14,16 +14,6 @@ CREATE TABLE shanduoduo_items (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc', now())
 );
 
-alter table shanduoduo_items enable row level security;
-create policy "Anyone can view todos" on shanduoduo_items for
-    select using (true);
-create policy "Anyone can add new todos" on shanduoduo_items for
-    insert with check (true);
-CREATE POLICY "Allow update for all users"
-ON shanduoduo_items
-FOR UPDATE
-USING (true);
-
 -- 参与者表
 CREATE TABLE shanduoduo_participants (
   id SERIAL PRIMARY KEY,           -- 自增主键
@@ -36,17 +26,9 @@ CREATE TABLE shanduoduo_participants (
   claim_time BIGINT,              -- 认领时间戳
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc', now())
 );
-
 -- 创建索引
 CREATE INDEX idx_item_id ON shanduoduo_participants(item_id);
 CREATE INDEX idx_openid ON shanduoduo_participants(openid);
-
-alter table shanduoduo_participants enable row level security;
-create policy "Anyone can view todos" on shanduoduo_participants for
-    select using (true);
-create policy "Anyone can add new todos" on shanduoduo_participants for
-    insert with check (true);
-
 
 CREATE TABLE wx_users (
     id SERIAL PRIMARY KEY,
@@ -56,20 +38,52 @@ CREATE TABLE wx_users (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
-
 -- Add indexes
 create index wx_users_openid_idx on wx_users(openid);
 
+CREATE TABLE scroll_view_state (
+  id SERIAL PRIMARY KEY,
+  show_flag BOOLEAN NOT NULL DEFAULT false,
+  timestamp TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+-- 插入初始记录
+INSERT INTO scroll_view_state (show_flag) VALUES (false);
+
+
+alter table shanduoduo_items enable row level security;
+create policy "Anyone can view todos" on shanduoduo_items for
+    select using (true);
+create policy "Anyone can add new todos" on shanduoduo_items for
+    insert with check (true);
+CREATE POLICY "Allow update for all users"
+ON shanduoduo_items
+FOR UPDATE
+USING (true);
+
+
+alter table shanduoduo_participants enable row level security;
+create policy "Anyone can view todos" on shanduoduo_participants for
+    select using (true);
+create policy "Anyone can add new todos" on shanduoduo_participants for
+    insert with check (true);
+
+    
 alter table wx_users enable row level security;
 create policy "Anyone can view todos" on wx_users for
     select using (true);
 create policy "Anyone can add new todos" on wx_users for
     insert with check (true);
-    -- 在 Supabase SQL Editor 执行
 CREATE POLICY "Allow update for all users"
 ON wx_users
 FOR UPDATE
 USING (true);
+
+alter table scroll_view_state enable row level security;
+create policy "Anyone can view todos" on scroll_view_state for
+    select using (true);
+create policy "Anyone can add new todos" on scroll_view_state for
+    insert with check (true);
 
   -- 1. 创建一个函数，用于更新 updated_at 字段
   CREATE OR REPLACE FUNCTION update_updated_at_column()
@@ -91,3 +105,4 @@ USING (true);
   BEFORE UPDATE ON shanduoduo_items
   FOR EACH ROW
   EXECUTE PROCEDURE update_updated_at_column();
+  
