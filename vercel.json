@@ -2,7 +2,7 @@
     "version": 2,
     "builds": [
         {
-            "src": "client/**",
+            "src": "client/**/*",
             "use": "@vercel/static"
         },
         {
@@ -10,10 +10,18 @@
             "use": "@vercel/node"
         }
     ],
-    "rewrites": [
+    "routes": [
         {
-            "source": "/api/(.*)",
-            "destination": "/server/api/index.js"
+            "src": "/",
+            "dest": "/client/index.html"
+        },
+        {
+            "src": "/api/(.*)",
+            "dest": "/server/api/index.js"
+        },
+        {
+            "src": "/(.*)",
+            "dest": "/client/$1"
         }
     ]
 }

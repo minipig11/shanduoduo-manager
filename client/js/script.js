@@ -1,3 +1,8 @@
+// Configuration
+const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:3000'
+    : 'https://shanduoduo.sicilyhuang.top';
+
 // 获取URL参数
 function getUrlParameter(name) {
     name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
@@ -14,7 +19,7 @@ function isImageFile(filename) {
 function loadBucketScript(bucketName) {
     return new Promise((resolve, reject) => {
         const script = document.createElement('script');
-        script.src = `http://shanduoduo.sicilyhuang.top/api/oss/${bucketName}/v0list.js`;
+        script.src = `${API_BASE_URL}/api/oss/${bucketName}/v0list.js`;
         script.dataset.bucketScript = 'true';
         
         // Initialize module if it doesn't exist
@@ -35,7 +40,11 @@ function loadBucketScript(bucketName) {
             }
         };
         
-        script.onerror = () => reject(new Error('Failed to load script'));
+        script.onerror = (error) => {
+            console.error('Script load error:', error);
+            reject(new Error(`Failed to load script from ${script.src}`));
+        };
+        
         document.head.appendChild(script);
     });
 }
@@ -97,7 +106,7 @@ function initPage(bucketName = 'liulantupian') {
         const imageItem = document.createElement('div');
         imageItem.className = 'image-item';
         const isImage = isImageFile(imageName);
-        const imageUrl = `http://shanduoduo.sicilyhuang.top/api/oss/${bucketName}/images/${imageName}`;
+        const imageUrl = `${API_BASE_URL}/api/oss/${bucketName}/images/${imageName}`;
         
         imageItem.innerHTML = `
             <div class="image-wrapper">
@@ -119,7 +128,7 @@ function initPage(bucketName = 'liulantupian') {
             if (!confirm('确定要删除这张图片吗？')) return;
             
             try {
-                const response = await fetch(`http://shanduoduo.sicilyhuang.top/api/oss/${bucketName}/images/${imageName}`, {
+                const response = await fetch(`${API_BASE_URL}/api/oss/${bucketName}/images/${imageName}`, {
                     method: 'DELETE',
                 });
                 
