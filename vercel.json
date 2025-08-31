@@ -2,34 +2,18 @@
     "version": 2,
     "builds": [
         {
+            "src": "client/**",
+            "use": "@vercel/static"
+        },
+        {
             "src": "server/api/index.js",
             "use": "@vercel/node"
-        },
-        {
-            "src": "client/dist/**",
-            "use": "@vercel/static"
         }
     ],
-    "routes": [
+    "rewrites": [
         {
-            "src": "/api/ws",
-            "dest": "server/api/index.js",
-            "headers": {
-                "Upgrade": "websocket",
-                "Connection": "Upgrade"
-            }
-        },
-        {
-            "src": "/api/(.*)",
-            "dest": "server/api/index.js"
-        },
-        {
-            "src": "/(.*\\.\\w+)",
-            "dest": "client/dist/$1"
-        },
-        {
-            "src": "/(.*)",
-            "dest": "client/dist/index.html"
+            "source": "/api/(.*)",
+            "destination": "/server/api/index.js"
         }
     ]
 }
