@@ -1,6 +1,5 @@
-### Test WeChat Login - Valid Code
-#@baseUrl = http://localhost:3000
 @baseUrl = https://shanduoduo.sicilyhuang.top/
+#@baseUrl = http://localhost:3000
 
 POST {{baseUrl}}/api/auth/login
 Content-Type: application/json

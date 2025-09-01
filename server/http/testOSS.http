@@ -1,7 +1,8 @@
-#@baseUrl = https://dev-shanduoduo.sicilyhuang.top/
-@baseUrl = http://localhost:3000
-# @bucket = liulantupian
+@baseUrl = https://dev-shanduoduo.sicilyhuang.top/
+#@baseUrl = http://localhost:3000
+
 @bucket = shanduoduo
+#@bucket = liulantupian
 
 ### 获取 liulantupian bucket 的图片列表
 GET {{baseUrl}}/api/oss/{{bucket}}/images
